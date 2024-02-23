@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -754,6 +755,14 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     {
         const CTransaction* ptxConflicting = m_pool.GetConflictTx(txin.prevout);
         if (ptxConflicting) {
+
+            // !SCASH
+            // First-seen rule to reject conflicting transactions (legacy behaviour disables RBF).
+            if (g_isRandomX) {
+                return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "txn-mempool-conflict");
+            }
+            // !SCASH END
+
             if (!args.m_allow_replacement) {
                 // Transaction conflicts with a mempool tx, but we're not allowing replacements.
                 return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "bip125-replacement-disallowed");
@@ -1054,7 +1063,9 @@ bool MemPoolAccept::PolicyScriptChecks(const ATMPArgs& args, Workspace& ws)
     const CTransaction& tx = *ws.m_ptx;
     TxValidationState& state = ws.m_state;
 
-    constexpr unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS;
+    // !SCASH
+    const unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS | (g_isRandomX ? SCRIPT_VERIFY_DISCOURAGE_ORDINALS : 0);
+    // !SCASH END
 
     // Check input scripts and signatures.
     // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -1786,6 +1797,10 @@ bool ChainstateManager::IsInitialBlockDownload() const
     }
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     m_cached_finished_ibd.store(true, std::memory_order_relaxed);
+
+    // !SCASH
+    g_isIBDFinished = true;
+    // !SCASH END
     return false;
 }
 
@@ -3656,7 +3671,9 @@ void ChainstateManager::ReceivedBlockTransactions(const CBlock& block, CBlockInd
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
+    // !SCASH
+    if (fCheckPOW && !CheckProofOfWorkRandomX(block, consensusParams, POW_VERIFY_FULL))
+    // !SCASH END
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
 
     return true;
@@ -3850,7 +3867,9 @@ std::vector<unsigned char> ChainstateManager::GenerateCoinbaseCommitment(CBlock&
 bool HasValidProofOfWork(const std::vector<CBlockHeader>& headers, const Consensus::Params& consensusParams)
 {
     return std::all_of(headers.cbegin(), headers.cend(),
-            [&](const auto& header) { return CheckProofOfWork(header.GetHash(), header.nBits, consensusParams);});
+            // !SCASH
+            [&](const auto& header) { return CheckProofOfWorkRandomX(header, consensusParams, POW_VERIFY_COMMITMENT_ONLY);});
+            // !SCASH END
 }
 
 bool IsBlockMutated(const CBlock& block, bool check_witness_root)
@@ -4029,10 +4048,18 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             return true;
         }
 
-        if (!CheckBlockHeader(block, state, GetConsensus())) {
+        // !SCASH
+        // Sanity check the pow commitment meets the target (cheap)
+        if (g_isRandomX && !CheckProofOfWorkRandomX(block, GetConsensus(), POW_VERIFY_COMMITMENT_ONLY)) {
+            state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
             LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
             return false;
         }
+        else if (!CheckBlockHeader(block, state, GetConsensus())) {
+            LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
+            return false;
+        }
+        // !SCASH END
 
         // Get prev block index
         CBlockIndex* pindexPrev = nullptr;
@@ -4050,6 +4077,15 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             LogPrint(BCLog::VALIDATION, "%s: Consensus::ContextualCheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
             return false;
         }
+
+        // !SCASH
+        // Verify timestamp (and thus the epoch) in contextual check above, before performing full pow verification.
+        // This ordering help prevents resource denial when -randomxfastmode=1, as VM creation is based on epoch.
+        if (g_isRandomX && !CheckBlockHeader(block, state, GetConsensus())) {
+            LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
+            return false;
+        }
+        // !SCASH END
 
         /* Determine if this block descends from any block which has been found
          * invalid (m_failed_blocks), then mark pindexPrev and any blocks between

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test various command line arguments and configuration file parameters."""
@@ -15,6 +16,9 @@ from test_framework.test_framework import BitcoinTestFramework
 from test_framework.test_node import ErrorMatch
 from test_framework import util
 
+# !SCASH
+from test_framework.test_framework import CHAIN_TYPE_FROM_SUBDIR
+# !SCASH END
 
 class ConfArgsTest(BitcoinTestFramework):
     def add_options(self, parser):
@@ -40,7 +44,9 @@ class ConfArgsTest(BitcoinTestFramework):
             expected_msg=conf_in_config_file_err,
         )
         inc_conf_file_path = self.nodes[0].datadir_path / 'include.conf'
-        with open(self.nodes[0].datadir_path / 'bitcoin.conf', 'a', encoding='utf-8') as conf:
+        # !SCASH
+        with open(self.nodes[0].datadir_path / 'scash.conf', 'a', encoding='utf-8') as conf:
+        # !SCASH END
             conf.write(f'includeconf={inc_conf_file_path}\n')
         with open(inc_conf_file_path, 'w', encoding='utf-8') as conf:
             conf.write('conf=some.conf\n')
@@ -73,7 +79,9 @@ class ConfArgsTest(BitcoinTestFramework):
         if self.is_wallet_compiled():
             with open(inc_conf_file_path, 'w', encoding='utf8') as conf:
                 conf.write("wallet=foo\n")
-            self.nodes[0].assert_start_raises_init_error(expected_msg=f'Error: Config setting for -wallet only applied on {self.chain} network when in [{self.chain}] section.')
+            # !SCASH
+            self.nodes[0].assert_start_raises_init_error(expected_msg=f'Error: Config setting for -wallet only applied on {CHAIN_TYPE_FROM_SUBDIR[self.chain]} network when in [{CHAIN_TYPE_FROM_SUBDIR[self.chain]}] section.')
+            # !SCASH END
 
         main_conf_file_path = self.nodes[0].datadir_path / "bitcoin_main.conf"
         util.write_config(main_conf_file_path, n=0, chain='', extra_config=f'includeconf={inc_conf_file_path}\n')
@@ -98,7 +106,9 @@ class ConfArgsTest(BitcoinTestFramework):
         self.nodes[0].assert_start_raises_init_error(expected_msg='Error: Error reading configuration file: parse error on line 4, using # in rpcpassword can be ambiguous and should be avoided')
 
         inc_conf_file2_path = self.nodes[0].datadir_path / 'include2.conf'
-        with open(self.nodes[0].datadir_path / 'bitcoin.conf', 'a', encoding='utf-8') as conf:
+        # !SCASH
+        with open(self.nodes[0].datadir_path / 'scash.conf', 'a', encoding='utf-8') as conf:
+        # !SCASH END
             conf.write(f'includeconf={inc_conf_file2_path}\n')
 
         with open(inc_conf_file_path, 'w', encoding='utf-8') as conf:
@@ -130,7 +140,10 @@ class ConfArgsTest(BitcoinTestFramework):
         # datadir= line pointing at the node datadir.
         node = self.nodes[0]
         conf_text = node.bitcoinconf.read_text()
-        conf_path = default_datadir / "bitcoin.conf"
+
+        # !SCASH
+        conf_path = default_datadir / 'scash.conf'
+        # !SCASH END
         conf_path.write_text(f"datadir={node.datadir_path}\n{conf_text}")
 
         # Drop the node -datadir= argument during this test, because if it is
@@ -169,8 +182,10 @@ class ConfArgsTest(BitcoinTestFramework):
                     'Command-line arg: rpcpassword=****',
                     'Command-line arg: rpcuser=****',
                     'Command-line arg: torpassword=****',
-                    f'Config file arg: {self.chain}="1"',
-                    f'Config file arg: [{self.chain}] server="1"',
+                    # !SCASH
+                    f'Config file arg: {CHAIN_TYPE_FROM_SUBDIR[self.chain]}="1"',
+                    f'Config file arg: [{CHAIN_TYPE_FROM_SUBDIR[self.chain]}] server="1"',
+                    # !SCASH END
                 ],
                 unexpected_msgs=[
                     'alice:f7efda5c189b999524f151318c0c86$d5b51b3beffbc0',
@@ -326,14 +341,18 @@ class ConfArgsTest(BitcoinTestFramework):
         with tempfile.NamedTemporaryFile(dir=self.options.tmpdir, mode="wt", delete=False) as temp_conf:
             temp_conf.write(f"datadir={node.datadir_path}\n")
         node.assert_start_raises_init_error([f"-conf={temp_conf.name}"], re.escape(
-            f'Error: Data directory "{node.datadir_path}" contains a "bitcoin.conf" file which is ignored, because a '
+            # !SCASH
+            f'Error: Data directory "{node.datadir_path}" contains a "scash.conf" file which is ignored, because a '
+            # !SCASH END
             f'different configuration file "{temp_conf.name}" from command line argument "-conf={temp_conf.name}" '
             f'is being used instead.') + r"[\s\S]*", match=ErrorMatch.FULL_REGEX)
 
         # Test that passing a redundant -conf command line argument pointing to
         # the same bitcoin.conf that would be loaded anyway does not trigger an
         # error.
-        self.start_node(0, [f'-conf={node.datadir_path}/bitcoin.conf'])
+        # !SCASH
+        self.start_node(0, [f'-conf={node.datadir_path}/scash.conf'])
+        # !SCASH END
         self.stop_node(0)
 
     def test_ignored_default_conf(self):
@@ -355,7 +374,9 @@ class ConfArgsTest(BitcoinTestFramework):
         # startup error because the node datadir contains a different
         # bitcoin.conf that would be ignored.
         node = self.nodes[0]
-        (default_datadir / "bitcoin.conf").write_text(f"datadir={node.datadir_path}\n")
+        # !SCASH
+        (default_datadir / 'scash.conf').write_text(f"datadir={node.datadir_path}\n")
+        # !SCASH END
 
         # Drop the node -datadir= argument during this test, because if it is
         # specified it would take precedence over the datadir setting in the
@@ -363,18 +384,26 @@ class ConfArgsTest(BitcoinTestFramework):
         node_args = node.args
         node.args = [arg for arg in node.args if not arg.startswith("-datadir=")]
         node.assert_start_raises_init_error([], re.escape(
-            f'Error: Data directory "{node.datadir_path}" contains a "bitcoin.conf" file which is ignored, because a '
-            f'different configuration file "{default_datadir}/bitcoin.conf" from data directory "{default_datadir}" '
+            # !SCASH
+            f'Error: Data directory "{node.datadir_path}" contains a "scash.conf" file which is ignored, because a '
+            f'different configuration file "{default_datadir}/scash.conf" from data directory "{default_datadir}" '
+            # !SCASH END
             f'is being used instead.') + r"[\s\S]*", env=env, match=ErrorMatch.FULL_REGEX)
         node.args = node_args
 
     def test_acceptstalefeeestimates_arg_support(self):
         self.log.info("Test -acceptstalefeeestimates option support")
-        conf_file = self.nodes[0].datadir_path / "bitcoin.conf"
-        for chain, chain_name in {("main", ""), ("test", "testnet3"), ("signet", "signet")}:
+        # !SCASH
+        conf_file = self.nodes[0].datadir_path / 'scash.conf'
+        # !SCASH END
+        #! SCASH
+        for chain, chain_name in {("main", "btc"), ("test", "btctestnet3"), ("signet", "btcsignet")}:
+        #! SCASH END
             util.write_config(conf_file, n=0, chain=chain_name, extra_config='acceptstalefeeestimates=1\n')
             self.nodes[0].assert_start_raises_init_error(expected_msg=f'Error: acceptstalefeeestimates is not supported on {chain} chain.')
-        util.write_config(conf_file, n=0, chain="regtest")  # Reset to regtest
+        #! SCASH
+        util.write_config(conf_file, n=0, chain="btcregtest")  # Reset to regtest
+        #! SCASH END
 
     def run_test(self):
         self.test_log_buffer()
@@ -402,7 +431,9 @@ class ConfArgsTest(BitcoinTestFramework):
         self.nodes[0].assert_start_raises_init_error([f'-datadir={new_data_dir}'], f'Error: Specified data directory "{new_data_dir}" does not exist.')
 
         # Check that using non-existent datadir in conf file fails
-        conf_file = default_data_dir / "bitcoin.conf"
+        # !SCASH
+        conf_file = default_data_dir / 'scash.conf'
+        # !SCASH END
 
         # datadir needs to be set before [chain] section
         with open(conf_file, encoding='utf8') as f:

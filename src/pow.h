@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,6 +10,8 @@
 #include <consensus/params.h>
 
 #include <stdint.h>
+
+#include <randomx.h>
 
 class CBlockHeader;
 class CBlockIndex;
@@ -33,5 +36,34 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
  * such as regtest/testnet.
  */
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits);
+
+// !SCASH
+
+typedef enum POWVerifyMode_t
+{
+    POW_VERIFY_FULL = 0,
+    POW_VERIFY_COMMITMENT_ONLY,
+    POW_VERIFY_MINING
+} POWVerifyMode;
+
+/** Faster RandomX computation but requires more memory */
+static constexpr bool DEFAULT_RANDOMX_FAST_MODE = false;
+
+/** Number of epochs to cache. There is one VM per epoch. Minimum is 1.*/
+static constexpr int DEFAULT_RANDOMX_VM_CACHE_SIZE = 2;
+
+/** Calculate epoch from timestamp */
+uint32_t GetEpoch(uint32_t nTime, uint32_t nDuration);
+
+/** Calculate RandomX key for a given epoch */
+uint256 GetSeedHash(uint32_t nEpoch);
+
+/** Check if RandomX commitment of block satisfies the proof-of-work requirement specified by nBits */
+bool CheckProofOfWorkRandomX(const CBlockHeader& block, const Consensus::Params& params, POWVerifyMode mode = POW_VERIFY_FULL, uint256 *outHash = nullptr);
+
+/** Calculate RandomX commitment of block */
+uint256 GetRandomXCommitment(const CBlockHeader& block, uint256 *inHash = nullptr);
+
+// !SCASH END
 
 #endif // BITCOIN_POW_H

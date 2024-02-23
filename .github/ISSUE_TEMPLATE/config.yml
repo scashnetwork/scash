@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Bitcoin Core Security Policy
-    url: https://github.com/bitcoin/bitcoin/blob/master/SECURITY.md
+  - name: Scash Security Policy
+    url: https://github.com/scash-project/scash/blob/master/SECURITY-SCASH.md
     about: View security policy
-  - name: Bitcoin Core Developers
-    url: https://bitcoincore.org
-    about: Bitcoin Core homepage
+  - name: Scash Developers
+    url: https://s.cash
+    about: Scash Project homepage

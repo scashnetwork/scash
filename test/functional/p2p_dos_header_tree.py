@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2019-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test that we reject low difficulty headers to prevent our block tree from filling up with useless bloat"""
@@ -20,7 +21,9 @@ import os
 class RejectLowDifficultyHeadersTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
-        self.chain = 'testnet3'  # Use testnet chain because it has an early checkpoint
+        #! SCASH
+        self.chain = 'btctestnet3'  # Use testnet chain because it has an early checkpoint
+        #! SCASH END
         self.num_nodes = 2
         self.extra_args = [["-minimumchainwork=0x0", '-prune=550']] * self.num_nodes
 

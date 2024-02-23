@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test multiple RPC users."""
@@ -61,11 +62,15 @@ class HTTPBasicsTest(BitcoinTestFramework):
         rpcauth3 = lines[1]
         self.password = lines[3]
 
-        with open(self.nodes[0].datadir_path / "bitcoin.conf", "a", encoding="utf8") as f:
+        # !SCASH
+        with open(self.nodes[0].datadir_path / 'scash.conf', "a", encoding="utf8") as f:
+        # !SCASH END
             f.write(rpcauth + "\n")
             f.write(rpcauth2 + "\n")
             f.write(rpcauth3 + "\n")
-        with open(self.nodes[1].datadir_path / "bitcoin.conf", "a", encoding="utf8") as f:
+        # !SCASH
+        with open(self.nodes[1].datadir_path / 'scash.conf', "a", encoding="utf8") as f:
+        # !SCASH END
             f.write("rpcuser={}\n".format(self.rpcuser))
             f.write("rpcpassword={}\n".format(self.rpcpassword))
         self.restart_node(0)

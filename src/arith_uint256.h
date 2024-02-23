@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,12 +24,27 @@ public:
 template<unsigned int BITS>
 class base_uint
 {
+    // SCASH
+    template<unsigned int B> friend class base_uint;
+    // !SCASH END
+
 protected:
     static_assert(BITS / 32 > 0 && BITS % 32 == 0, "Template parameter BITS must be a positive multiple of 32.");
     static constexpr int WIDTH = BITS / 32;
     uint32_t pn[WIDTH];
 public:
 
+    // !SCASH
+    template<unsigned int B>
+    static base_uint from(const base_uint<B>& b)
+    {
+        base_uint ret;
+        for (int i = 0; i < std::min(WIDTH, b.WIDTH); i++)
+            ret.pn[i] = b.pn[i];
+        return ret;
+    }
+    // !SCASH END
+    
     base_uint()
     {
         for (int i = 0; i < WIDTH; i++)
@@ -275,5 +291,14 @@ uint256 ArithToUint256(const arith_uint256 &);
 arith_uint256 UintToArith256(const uint256 &);
 
 extern template class base_uint<256>;
+
+// !SCASH
+class arith_uint512 : public base_uint<512> {
+public:
+    arith_uint512() {}
+    arith_uint512(const base_uint<512>& b) : base_uint<512>(b) {}
+    explicit arith_uint512(const std::string& str) : base_uint<512>(str) {}
+};
+// !SCASH END
 
 #endif // BITCOIN_ARITH_UINT256_H

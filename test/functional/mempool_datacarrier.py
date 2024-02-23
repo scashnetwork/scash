@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2020-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test datacarrier functionality"""
@@ -23,7 +24,9 @@ class DataCarrierTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
         self.extra_args = [
-            [],
+            # !SCASH
+            ["-datacarrier=1"],
+            # !SCASH END
             ["-datacarrier=0"],
             ["-datacarrier=1", f"-datacarriersize={MAX_OP_RETURN_RELAY - 1}"],
             ["-datacarrier=1", f"-datacarriersize=2"],

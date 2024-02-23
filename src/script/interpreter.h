@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -142,6 +143,11 @@ enum : uint32_t {
 
     // Making unknown public key versions (in BIP 342 scripts) non-standard
     SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_PUBKEYTYPE = (1U << 20),
+
+    // !SCASH
+    // Use of dead code patterns are non-standard
+    SCRIPT_VERIFY_DISCOURAGE_ORDINALS = (1U << 21),
+    // !SCASH END
 
     // Constants to point to the highest flag in use. Add new flags above this line.
     //
