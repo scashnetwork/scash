@@ -71,3 +71,11 @@ template void base_blob<256>::SetHex(const std::string&);
 
 const uint256 uint256::ZERO(0);
 const uint256 uint256::ONE(1);
+
+// !SCASH
+// Explicit instantiations for base_blob<512>
+template std::string base_blob<512>::GetHex() const;
+template std::string base_blob<512>::ToString() const;
+template void base_blob<512>::SetHex(const char*);
+template void base_blob<512>::SetHex(const std::string&);
+// !SCASH END

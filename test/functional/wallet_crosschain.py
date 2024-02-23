@@ -21,7 +21,9 @@ class WalletCrossChain(BitcoinTestFramework):
         self.add_nodes(self.num_nodes)
 
         # Switch node 1 to testnet before starting it.
-        self.nodes[1].chain = 'testnet3'
+        #! SCASH
+        self.nodes[1].chain = 'btctestnet3'
+        #! SCASH END
         self.nodes[1].extra_args = ['-maxconnections=0', '-prune=550'] # disable testnet sync
         self.nodes[1].replace_in_config([('regtest=', 'testnet='), ('[regtest]', '[test]')])
         self.start_nodes()

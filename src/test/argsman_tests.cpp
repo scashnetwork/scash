@@ -1034,10 +1034,14 @@ BOOST_AUTO_TEST_CASE(util_ReadWriteSettings)
     // Test error logging, and remove previously written setting.
     {
         ASSERT_DEBUG_LOG("Failed renaming settings file");
-        fs::remove(args1.GetDataDirBase() / "settings.json");
-        fs::create_directory(args1.GetDataDirBase() / "settings.json");
+        // !SCASH
+        // Use GetDataDirNet() which includes network identifier instead of GetDataDirBase().
+        // This fixes assertion failure if BTC mainnet folder is named instead of "".
+        fs::remove(args1.GetDataDirNet() / "settings.json");
+        fs::create_directory(args1.GetDataDirNet() / "settings.json");
         args2.WriteSettingsFile();
-        fs::remove(args1.GetDataDirBase() / "settings.json");
+        fs::remove(args1.GetDataDirNet() / "settings.json");
+        // !SCASH END
     }
 }
 

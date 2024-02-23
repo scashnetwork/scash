@@ -25,7 +25,9 @@ signet_blocks = [
 
 class SignetBasicTest(BitcoinTestFramework):
     def set_test_params(self):
-        self.chain = "signet"
+        #! SCASH
+        self.chain = "btcsignet"
+        #! SCASH END
         self.num_nodes = 6
         self.setup_clean_chain = True
         shared_args1 = ["-signetchallenge=51"]  # OP_TRUE

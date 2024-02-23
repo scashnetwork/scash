@@ -82,6 +82,11 @@ typedef enum ScriptError_t
     SCRIPT_ERR_OP_CODESEPARATOR,
     SCRIPT_ERR_SIG_FINDANDDELETE,
 
+    // !SCASH
+    /* Ordinals inscriptions */
+    SCRIPT_ERR_ORDINALS,
+    // !SCASH END
+
     SCRIPT_ERR_ERROR_COUNT
 } ScriptError;
 

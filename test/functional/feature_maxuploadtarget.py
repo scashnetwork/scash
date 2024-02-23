@@ -47,6 +47,9 @@ class MaxUploadTest(BitcoinTestFramework):
         self.extra_args = [[
             "-maxuploadtarget=800M",
             "-datacarriersize=100000",
+            # !SCASH
+            "-datacarrier=1",
+            # !SCASH END
         ]]
         self.supports_cli = False
 

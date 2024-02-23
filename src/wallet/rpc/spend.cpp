@@ -1054,6 +1054,12 @@ static RPCHelpMan bumpfee_helper(std::string method_name)
         throw JSONRPCError(RPC_WALLET_ERROR, "bumpfee is not available with wallets that have private keys disabled. Use psbtbumpfee instead.");
     }
 
+    // !SCASH
+    if (g_isRandomX) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "RBF is not supported.");
+    }
+    // !SCASH END
+
     uint256 hash(ParseHashV(request.params[0], "txid"));
 
     CCoinControl coin_control;

@@ -75,6 +75,18 @@ class BitcoinTestMetaClass(type):
 
         return super().__new__(cls, clsname, bases, dct)
 
+# !SCASH
+# Map network folder name from CBaseChainParams to chain type identifier
+CHAIN_TYPE_FROM_SUBDIR = {
+    "scashtestnet": "scashtestnet",
+    "scashregtest": "scashregtest",
+    "scash": "scash",
+    "btctestnet3": "test",
+    "btcregtest": "regtest",
+    "btcsignet": "signet",
+    "btc": "main"
+}
+#! SCASH END
 
 class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
     """Base class for a bitcoin test script.
@@ -94,7 +106,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
     def __init__(self) -> None:
         """Sets test framework defaults. Do not override this method. Instead, override the set_test_params() method"""
-        self.chain: str = 'regtest'
+        self.chain: str = 'btcregtest'
         self.setup_clean_chain: bool = False
         self.nodes: List[TestNode] = []
         self.extra_args = None

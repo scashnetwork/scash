@@ -14,7 +14,9 @@
 #include <string>
 #include <type_traits>
 
-const std::string CURRENCY_UNIT = "BTC"; // One formatted unit
+// !SCASH
+const std::string CURRENCY_UNIT = "SCASH"; // One formatted unit
+// !SCASH END
 const std::string CURRENCY_ATOM = "sat"; // One indivisible minimum value unit
 
 /* Used to determine type of fee estimation requested */

@@ -122,6 +122,15 @@ bool WalletInit::ParameterInteraction() const
         return InitError(Untranslated("-zapwallettxes has been removed. If you are attempting to remove a stuck transaction from your wallet, please use abandontransaction instead."));
     }
 
+    // !SCASH
+    ChainType chain = gArgs.GetChainType();
+    if (chain == ChainType::SCASHMAIN || chain == ChainType::SCASHREGTEST || chain == ChainType::SCASHTESTNET) {
+        if (gArgs.GetBoolArg("-walletrbf", DEFAULT_WALLET_RBF)) {
+            return InitError(Untranslated("RBF is not supported."));
+        }
+    }
+    // !SCASH END
+
     return true;
 }
 

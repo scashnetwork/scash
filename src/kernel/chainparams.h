@@ -161,6 +161,12 @@ public:
     static std::unique_ptr<const CChainParams> Main();
     static std::unique_ptr<const CChainParams> TestNet();
 
+    // !SCASH
+    static std::unique_ptr<const CChainParams> ScashRegTest(const RegTestOptions& options);
+    static std::unique_ptr<const CChainParams> ScashTestNet();
+    static std::unique_ptr<const CChainParams> ScashMain();
+    // !SCASH END
+
 protected:
     CChainParams() {}
 

@@ -90,6 +90,10 @@
 #include <validationinterface.h>
 #include <walletinitinterface.h>
 
+// !SCASH
+#include <pow.h>
+// !SCASH END
+
 #include <algorithm>
 #include <condition_variable>
 #include <cstdint>
@@ -154,7 +158,7 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 /**
  * The PID file facilities.
  */
-static const char* BITCOIN_PID_FILENAME = "bitcoind.pid";
+static const char* BITCOIN_PID_FILENAME = "scashd.pid";
 
 static fs::path GetPidFile(const ArgsManager& args)
 {
@@ -425,6 +429,12 @@ void SetupServerArgs(ArgsManager& argsman)
     const auto signetChainParams = CreateChainParams(argsman, ChainType::SIGNET);
     const auto regtestChainParams = CreateChainParams(argsman, ChainType::REGTEST);
 
+    // !SCASH
+    const auto scashRegtestChainParams = CreateChainParams(argsman, ChainType::SCASHREGTEST);
+    const auto scashTestnetChainParams = CreateChainParams(argsman, ChainType::SCASHTESTNET);
+    const auto scashMainChainParams = CreateChainParams(argsman, ChainType::SCASHMAIN);
+    // !SCASH END
+
     // Hidden Options
     std::vector<std::string> hidden_args = {
         "-dbcrashratio", "-forcecompactdb",
@@ -474,6 +484,10 @@ void SetupServerArgs(ArgsManager& argsman)
                  strprintf("Maintain an index of compact filters by block (default: %s, values: %s).", DEFAULT_BLOCKFILTERINDEX, ListBlockFilterTypes()) +
                  " If <type> is not supplied or if <type> = 1, indexes for all known types are enabled.",
                  ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+// !SCASH
+    argsman.AddArg("-randomxfastmode", strprintf("Enable fast mode for RandomX VM, but with greatly increased memory usage. Use 1 to enable. (default: %u)", DEFAULT_RANDOMX_FAST_MODE), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-randomxvmcachesize=<n>", strprintf("Cache RandomX VMs used for each epoch, but this greatly increases memory usage. (minimum: 1, default: %d).", DEFAULT_RANDOMX_VM_CACHE_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+// !SCASH END
 
     argsman.AddArg("-addnode=<ip>", strprintf("Add a node to connect to and attempt to keep the connection open (see the addnode RPC help for more info). This option can be specified multiple times to add multiple nodes; connections are limited to %u at a time and are counted separately from the -maxconnections limit.", MAX_ADDNODE_CONNECTIONS), ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::CONNECTION);
     argsman.AddArg("-asmap=<file>", strprintf("Specify asn mapping used for bucketing of the peers (default: %s). Relative paths will be prefixed by the net-specific datadir location.", DEFAULT_ASMAP_FILENAME), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -1021,6 +1035,20 @@ bool AppInitParameterInteraction(const ArgsManager& args)
         }
     }
 
+    // !SCASH
+    if (chain == ChainType::SCASHMAIN || chain == ChainType::SCASHREGTEST || chain == ChainType::SCASHTESTNET) {
+        if (args.GetBoolArg("-mempoolfullrbf", DEFAULT_MEMPOOL_FULL_RBF)) {
+            return InitError(Untranslated("RBF is not supported."));
+        }
+        if (args.GetBoolArg("-datacarrier", DEFAULT_ACCEPT_DATACARRIER)) {
+            return InitError(Untranslated("Data carrier is not supported."));
+        }
+        if (args.GetIntArg("-randomxvmcachesize", DEFAULT_RANDOMX_VM_CACHE_SIZE) <= 0) {
+            return InitError(Untranslated("randomxvmcachesize must be a positive integer."));
+        }
+    }
+    // !SCASH END
+
     return true;
 }
 
@@ -1074,6 +1102,13 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 {
     const ArgsManager& args = *Assert(node.args);
     const CChainParams& chainparams = Params();
+
+    // !SCASH
+    if (chainparams.GetConsensus().fPowRandomX) {
+        g_isRandomX = true;
+        LogPrintf("%s: Scash RandomX proof-of-work active\n", __func__);
+    }
+    // !SCASH END
 
     auto opt_max_upload = ParseByteUnits(args.GetArg("-maxuploadtarget", DEFAULT_MAX_UPLOAD_TARGET), ByteUnit::M);
     if (!opt_max_upload) {

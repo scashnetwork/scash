@@ -38,7 +38,9 @@ class WalletMigrationTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
-        self.extra_args = [[]]
+        # !SCASH
+        self.extra_args = [["-walletrbf=1"]]  # Scash sets default to false, test assumes true
+        # !SCASH END
         self.supports_cli = False
 
     def skip_test_if_missing_module(self):

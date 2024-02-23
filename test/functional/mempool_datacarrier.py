@@ -24,7 +24,9 @@ class DataCarrierTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
         self.extra_args = [
-            [],
+            # !SCASH
+            ["-datacarrier=1"],
+            # !SCASH END
             ["-datacarrier=0"],
             ["-datacarrier=1", f"-datacarriersize={MAX_OP_RETURN_RELAY - 1}"],
             ["-datacarrier=1", f"-datacarriersize=2"],

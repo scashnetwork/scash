@@ -120,10 +120,18 @@ static bool GenerateBlock(ChainstateManager& chainman, CBlock& block, uint64_t& 
     block_out.reset();
     block.hashMerkleRoot = BlockMerkleRoot(block);
 
-    while (max_tries > 0 && block.nNonce < std::numeric_limits<uint32_t>::max() && !CheckProofOfWork(block.GetHash(), block.nBits, chainman.GetConsensus()) && !ShutdownRequested()) {
+    // !SCASH
+    uint256 rxHash;
+    rxHash.SetNull();
+    while (max_tries > 0 &&
+           block.nNonce < std::numeric_limits<uint32_t>::max() &&
+           !CheckProofOfWorkRandomX(block, chainman.GetConsensus(), POW_VERIFY_MINING, &rxHash)) {
         ++block.nNonce;
         --max_tries;
     }
+    block.hashRandomX = rxHash;
+    // !SCASH END
+
     if (max_tries == 0 || ShutdownRequested()) {
         return false;
     }
@@ -629,6 +637,10 @@ static RPCHelpMan getblocktemplate()
                 {RPCResult::Type::NUM, "height", "The height of the next block"},
                 {RPCResult::Type::STR_HEX, "signet_challenge", /*optional=*/true, "Only on signet"},
                 {RPCResult::Type::STR_HEX, "default_witness_commitment", /*optional=*/true, "a valid witness commitment for the unmodified block template"},
+
+                // !SCASH
+                {RPCResult::Type::NUM, "rx_epoch_duration", "seconds"},
+                // !SCASH END
             }},
         },
         RPCExamples{
@@ -947,6 +959,10 @@ static RPCHelpMan getblocktemplate()
     if (!pblocktemplate->vchCoinbaseCommitment.empty()) {
         result.pushKV("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment));
     }
+
+    // !SCASH
+    result.pushKV("rx_epoch_duration", consensusParams.nRandomXEpochDuration);
+    // !SCASH END
 
     return result;
 },

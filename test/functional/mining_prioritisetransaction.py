@@ -27,6 +27,9 @@ class PrioritiseTransactionTest(BitcoinTestFramework):
         self.extra_args = [[
             "-printpriority=1",
             "-datacarriersize=100000",
+            # !SCASH
+            "-datacarrier=1",
+            # !SCASH END
         ]] * self.num_nodes
         self.supports_cli = False
 

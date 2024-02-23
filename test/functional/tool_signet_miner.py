@@ -24,7 +24,9 @@ class SignetMinerTest(BitcoinTestFramework):
         self.add_wallet_options(parser)
 
     def set_test_params(self):
-        self.chain = "signet"
+        #! SCASH
+        self.chain = "btcsignet"
+        #! SCASH END
         self.setup_clean_chain = True
         self.num_nodes = 1
 

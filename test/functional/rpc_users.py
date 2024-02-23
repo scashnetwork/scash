@@ -61,11 +61,15 @@ class HTTPBasicsTest(BitcoinTestFramework):
         rpcauth3 = lines[1]
         self.password = lines[3]
 
-        with open(self.nodes[0].datadir_path / "bitcoin.conf", "a", encoding="utf8") as f:
+        # !SCASH
+        with open(self.nodes[0].datadir_path / 'scash.conf', "a", encoding="utf8") as f:
+        # !SCASH END
             f.write(rpcauth + "\n")
             f.write(rpcauth2 + "\n")
             f.write(rpcauth3 + "\n")
-        with open(self.nodes[1].datadir_path / "bitcoin.conf", "a", encoding="utf8") as f:
+        # !SCASH
+        with open(self.nodes[1].datadir_path / 'scash.conf', "a", encoding="utf8") as f:
+        # !SCASH END
             f.write("rpcuser={}\n".format(self.rpcuser))
             f.write("rpcpassword={}\n".format(self.rpcpassword))
         self.restart_node(0)

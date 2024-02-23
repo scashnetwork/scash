@@ -75,6 +75,9 @@ class RawTransactionsTest(BitcoinTestFramework):
         # whitelist all peers to speed up tx relay / mempool sync
         for args in self.extra_args:
             args.append("-whitelist=noban@127.0.0.1")
+            # !SCASH
+            args.append("-datacarrier=1")
+            # !SCASH END
         self.supports_cli = False
 
     def setup_network(self):

@@ -35,6 +35,10 @@ class WalletSendTest(BitcoinTestFramework):
             ["-whitelist=127.0.0.1","-walletrbf=1"],
             ["-whitelist=127.0.0.1","-walletrbf=1"],
         ]
+        # !SCASH
+        for args in self.extra_args:
+            args.append("-datacarrier=1")
+        # !SCASH END
         getcontext().prec = 8 # Satoshi precision for Decimal
 
     def skip_test_if_missing_module(self):
