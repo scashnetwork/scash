@@ -634,6 +634,9 @@ public:
         m_is_mockable_chain = false;
 
         checkpointData = {
+            {
+                { 111, uint256S("8ae1c9355d55513c407c75fbfc5e10aea64654caaae0c94ccb16572cb0e04d17")},
+            }
         };
 
         m_assumeutxo_data = {
