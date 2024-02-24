@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Scash Security Policy
-    url: https://github.com/scash-project/scash/blob/master/SECURITY-SCASH.md
+    url: https://github.com/scash-project/scash/blob/scash_master/SECURITY-SCASH.md
     about: View security policy
   - name: Scash Developers
     url: https://s.cash
