@@ -212,7 +212,9 @@ class WalletLabelsTest(BitcoinTestFramework):
                 ad = BECH32_INVALID[l]
                 assert_raises_rpc_error(
                     -5,
-                    "Address is not valid" if self.options.descriptors else "Invalid Bitcoin address or script",
+                    # !SCASH
+                    "Address is not valid" if self.options.descriptors else "Invalid Scash address or script",
+                    # !SCASH END
                     lambda: wallet_watch_only.importaddress(label=l, rescan=False, address=ad),
                 )
 

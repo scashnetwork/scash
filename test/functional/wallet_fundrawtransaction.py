@@ -276,7 +276,9 @@ class RawTransactionsTest(BitcoinTestFramework):
         dec_tx  = self.nodes[2].decoderawtransaction(rawtx)
         assert_equal(utx['txid'], dec_tx['vin'][0]['txid'])
 
-        assert_raises_rpc_error(-5, "Change address must be a valid bitcoin address", self.nodes[2].fundrawtransaction, rawtx, changeAddress='foobar')
+        # !SCASH
+        assert_raises_rpc_error(-5, "Change address must be a valid Scash address", self.nodes[2].fundrawtransaction, rawtx, changeAddress='foobar')
+        # !SCASH END
 
     def test_valid_change_address(self):
         self.log.info("Test fundrawtxn with a provided change address")

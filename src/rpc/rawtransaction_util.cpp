@@ -112,7 +112,9 @@ void AddOutputs(CMutableTransaction& rawTx, const UniValue& outputs_in)
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
+                // !SCASH
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Scash address: ") + name_);
+                // !SCASH END
             }
 
             if (!destinations.insert(destination).second) {
