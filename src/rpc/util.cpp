@@ -23,7 +23,9 @@
 #include <tuple>
 
 const std::string UNIX_EPOCH_TIME = "UNIX epoch time";
-const std::string EXAMPLE_ADDRESS[2] = {"bc1q09vm5lfy0j5reeulh4x5752q25uqqvz34hufdl", "bc1q02ad21edsxd23d32dfgqqsz4vv4nmtfzuklhy3"};
+// !SCASH
+const std::string EXAMPLE_ADDRESS[2] = {"scash1qszrk8tlw87204xl2mhw3d4d4gypz9ytalzk8rq", "scash1qdqh2zcph5nqqlhk2cnrf3lrfs4s4k0j2eczuq6"};
+// !SCASH END
 
 std::string GetAllOutputTypes()
 {
@@ -142,12 +144,16 @@ std::string ShellQuoteIfNeeded(const std::string& s)
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
-    return "> bitcoin-cli " + methodname + " " + args + "\n";
+    // !SCASH
+    return "> scash-cli " + methodname + " " + args + "\n";
+    // !SCASH END
 }
 
 std::string HelpExampleCliNamed(const std::string& methodname, const RPCArgList& args)
 {
-    std::string result = "> bitcoin-cli -named " + methodname;
+    // !SCASH
+    std::string result = "> scash-cli -named " + methodname;
+    // !SCASH END
     for (const auto& argpair: args) {
         const auto& value = argpair.second.isStr()
                 ? argpair.second.get_str()
