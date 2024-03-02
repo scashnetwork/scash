@@ -121,6 +121,18 @@ scash-cli getnewaddress # the mining address
 scash-cli generatetoaddress 1 miningaddress 10000
 ```
 
+To speed up mining at the expense of using more memory (at least 2GB more), enable the option `randomxfastmode` by adding to the `scash.conf` configuration file:
+
+```
+randomxfastmode=1
+```
+
+Note that on WSL for Windows, by default only half of the memory is available to WSL. You can [configure the memory limit](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#main-wsl-settings) by creating `.wslconfig` file in your user folder.
+```
+[wsl2]
+memory=16GB
+```
+
 Solo mining with RPC `getblocktemplate` is possible with [cpuminer-scash](https://github.com/scash-project/cpuminer-scash).
 
 
