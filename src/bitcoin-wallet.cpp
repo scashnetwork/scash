@@ -62,17 +62,21 @@ static std::optional<int> WalletAppInit(ArgsManager& args, int argc, char* argv[
     }
     const bool missing_args{argc < 2};
     if (missing_args || HelpRequested(args) || args.IsArgSet("-version")) {
-        std::string strUsage = strprintf("%s bitcoin-wallet version", PACKAGE_NAME) + " " + FormatFullVersion() + "\n";
+        // !SCASH
+        std::string strUsage = strprintf("%s scash-wallet version", PACKAGE_NAME) + " " + FormatFullVersion() + "\n";
+        // !SCASH END
 
         if (args.IsArgSet("-version")) {
             strUsage += FormatParagraph(LicenseInfo());
         } else {
             strUsage += "\n"
-                        "bitcoin-wallet is an offline tool for creating and interacting with " PACKAGE_NAME " wallet files.\n"
-                        "By default bitcoin-wallet will act on wallets in the default mainnet wallet directory in the datadir.\n"
+                        // !SCASH
+                        "scash-wallet is an offline tool for creating and interacting with " PACKAGE_NAME " wallet files.\n"
+                        "By default scash-wallet will act on wallets in the default mainnet wallet directory in the datadir.\n"
                         "To change the target wallet, use the -datadir, -wallet and -regtest/-signet/-testnet arguments.\n\n"
                         "Usage:\n"
-                        "  bitcoin-wallet [options] <command>\n";
+                        "  scash-wallet [options] <command>\n";
+                        // !SCASH END
             strUsage += "\n" + args.GetHelpMessage();
         }
         tfm::format(std::cout, "%s", strUsage);
@@ -124,7 +128,9 @@ MAIN_FUNCTION
 
     const auto command = args.GetCommand();
     if (!command) {
-        tfm::format(std::cerr, "No method provided. Run `bitcoin-wallet -help` for valid methods.\n");
+        // !SCASH
+        tfm::format(std::cerr, "No method provided. Run `scash-wallet -help` for valid methods.\n");
+        // !SCASH END
         return EXIT_FAILURE;
     }
     if (command->args.size() != 0) {
