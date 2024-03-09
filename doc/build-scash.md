@@ -7,7 +7,7 @@ Technical details are documented in the [Scash Protocol spec](https://github.com
 
 Building Scash follows the same instructions as building Bitcoin. The Scash network shares the same features and rules as Bitcoin mainnet, as specified in Bitcoin Core v26.0.
 
-Only the Linux version of the command-line node software is currently supported. The GUI, Windows and MacOS platforms are not yet supported. Note that Windows users can follow the Linux instructions when building in Ubuntu on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about).
+Only the Linux version of the command-line node software and QT GUI app are currently supported. Windows and MacOS platforms are not yet supported. Note that Windows users can follow the Linux instructions when building in Ubuntu on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about).
 
 For more specific instructions on building, see [`build-unix.md`](build-unix.md) in this directory.
 
@@ -55,17 +55,32 @@ Scash requires building with the depends system.
 
 When calling `make` use `-j N` for N parallel jobs.
 
+To build just the node software `scashd` and not the QT GUI app:
+
 ```bash
 ./autogen.sh
 make -C depends NO_QT=1
 ./configure --without-gui --prefix=$PWD/depends/x86_64-pc-linux-gnu --program-transform-name='s/bitcoin/scash/g'
-make # binaries named bitcoind, bitcoin-cli...
-make install #binaries in depends bin folder named scashd, scash-cli...
+make
+make install
 ```
+
+To build both the node software `scashd` and the QT GUI app `scashd-qt`
+
+```bash
+./autogen.sh
+make -C depends
+./configure --prefix=$PWD/depends/x86_64-pc-linux-gnu --program-transform-name='s/bitcoin/scash/g'
+make
+make install
+```
+
+The compiled executables will be found in `depends/x86_64-pc-linux-gnu/bin/` and can be copied to a folder on your path, typically `/usr/local/bin/` or `$HOME/.local/bin/`.
+
 
 Config file
 ---------------------
-Scash configuration is the same as bitcoin.conf.
+The Scash configuration file is the same as bitcoin.conf.
 
 By default, Scash looks for a configuration file here:
 `$HOME/.scash/scash.conf`
@@ -93,7 +108,7 @@ If you intend to use the same configuration file with multiple networks, the con
 
 Running a node
 ---------------------
-To run the Scash node software:
+To run the Scash node:
 ```bash
 scashd
 ```
@@ -102,6 +117,12 @@ To send commands to the Scash node:
 ```
 scash-cli [COMMAND] [PARAMETERS]
 ```
+
+To run the desktop GUI app:
+```bash
+scash-qt
+```
+
 
 Testnet and other chains
 ---------------------
@@ -117,8 +138,8 @@ Mining Scash
 Solo mining is possible with the RPC `generatetoaddress`, for example:
 ```bash
 scash-cli createwallet myfirstwallet
-scash-cli getnewaddress # the mining address
-scash-cli generatetoaddress 1 miningaddress 10000
+scash-cli getnewaddress
+scash-cli generatetoaddress 1 newminingaddress 10000
 ```
 
 To speed up mining at the expense of using more memory (at least 2GB more), enable the option `randomxfastmode` by adding to the `scash.conf` configuration file:

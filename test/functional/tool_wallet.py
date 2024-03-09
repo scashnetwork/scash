@@ -194,7 +194,9 @@ class ToolWalletTest(BitcoinTestFramework):
         self.assert_raises_tool_error("Error parsing command line arguments: Invalid command 'help'", 'help')
         self.assert_raises_tool_error('Error: Additional arguments provided (create). Methods do not take arguments. Please refer to `-help`.', 'info', 'create')
         self.assert_raises_tool_error('Error parsing command line arguments: Invalid parameter -foo', '-foo')
-        self.assert_raises_tool_error('No method provided. Run `bitcoin-wallet -help` for valid methods.')
+        # !SCASH
+        self.assert_raises_tool_error('No method provided. Run `scash-wallet -help` for valid methods.')
+        # !SCASH END
         self.assert_raises_tool_error('Wallet name must be provided when creating a new wallet.', 'create')
         locked_dir = self.nodes[0].wallets_path
         error = 'Error initializing wallet database environment "{}"!'.format(locked_dir)
