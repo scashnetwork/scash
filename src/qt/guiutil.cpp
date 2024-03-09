@@ -505,11 +505,11 @@ bool LabelOutOfFocusEventFilter::eventFilter(QObject* watched, QEvent* event)
 fs::path static StartupShortcutPath()
 {
     ChainType chain = gArgs.GetChainType();
-    if (chain == ChainType::MAIN)
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin.lnk";
-    if (chain == ChainType::TESTNET) // Remove this special case when testnet CBaseChainParams::DataDir() is incremented to "testnet4"
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin (testnet).lnk";
-    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("Bitcoin (%s).lnk", ChainTypeToString(chain)));
+    // !SCASH
+    if (chain == ChainType::SCASHMAIN)
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "Scash.lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("Scash (%s).lnk", ChainTypeToString(chain)));
+    // !SCASH END
 }
 
 bool GetStartOnSystemStartup()
@@ -588,9 +588,11 @@ fs::path static GetAutostartDir()
 fs::path static GetAutostartFilePath()
 {
     ChainType chain = gArgs.GetChainType();
-    if (chain == ChainType::MAIN)
-        return GetAutostartDir() / "bitcoin.desktop";
-    return GetAutostartDir() / fs::u8path(strprintf("bitcoin-%s.desktop", ChainTypeToString(chain)));
+    // !SCASH
+    if (chain == ChainType::SCASHMAIN)
+        return GetAutostartDir() / "scash.desktop";
+    return GetAutostartDir() / fs::u8path(strprintf("scash-%s.desktop", ChainTypeToString(chain)));
+    // !SCASH END
 }
 
 bool GetStartOnSystemStartup()
@@ -634,10 +636,12 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         // Write a bitcoin.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
-        if (chain == ChainType::MAIN)
-            optionFile << "Name=Bitcoin\n";
+        // !SCASH
+        if (chain == ChainType::SCASHMAIN)
+            optionFile << "Name=Scash\n";
         else
-            optionFile << strprintf("Name=Bitcoin (%s)\n", ChainTypeToString(chain));
+            optionFile << strprintf("Name=Scash (%s)\n", ChainTypeToString(chain));
+        // !SCASH END
         optionFile << "Exec=" << pszExePath << strprintf(" -min -chain=%s\n", ChainTypeToString(chain));
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
