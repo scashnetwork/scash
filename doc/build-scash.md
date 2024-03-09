@@ -123,7 +123,7 @@ To run the desktop GUI app:
 scash-qt
 ```
 
-On WSL for Windows, launching `scash-qt` may require installing the following dependencies:
+On WSL for Windows, launching `scash-qt` may require installing the following dependencies. Also see [WSL gui apps](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
 ```bash
 sudo apt install libxcb-* libxkbcommon-x11-0
 ```
