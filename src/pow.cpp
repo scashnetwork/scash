@@ -92,7 +92,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // !SCASH
     // Fix legacy Bitcoin off-by-one retargeting bug to prevent a time warp attack.
     // Difficulty is now correctly calculated over block intervals which overlap.
-    int nHeightFirst = (g_isRandomX) ? std::max(0L, pindexLast->nHeight - params.DifficultyAdjustmentInterval()) :
+    int nHeightFirst = (g_isRandomX) ? std::max(0, pindexLast->nHeight - (int)params.DifficultyAdjustmentInterval()) :
                                        pindexLast->nHeight - (params.DifficultyAdjustmentInterval() - 1);
     // !SCASH END
 

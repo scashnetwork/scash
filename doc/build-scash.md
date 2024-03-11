@@ -7,7 +7,7 @@ Technical details are documented in the [Scash Protocol spec](https://github.com
 
 Building Scash follows the same instructions as building Bitcoin. The Scash network shares the same features and rules as Bitcoin mainnet, as specified in Bitcoin Core v26.0.
 
-Only the Linux version of the command-line node software and QT GUI app are currently supported. Windows and MacOS platforms are not yet supported. Note that Windows users can follow the Linux instructions when building in Ubuntu on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about).
+The Linux version of the node `scashd` and GUI app `scash-qt` are both supported, with Windows binaries also  available (cross-compiled on Linux). MacOS is not yet supported. Note that Windows users can build from source by following the Linux instructions when building in Ubuntu on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about).
 
 For more specific instructions on building, see [`build-unix.md`](build-unix.md) in this directory.
 
@@ -48,7 +48,7 @@ cd scash
 git checkout scash_master
 ```
 
-To Build
+Building for Linux
 ---------------------
 
 Scash requires building with the depends system.
