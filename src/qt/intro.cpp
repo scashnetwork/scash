@@ -389,7 +389,9 @@ void Intro::UpdatePruneLabels(bool prune_checked)
         //: Explanatory text on the capability of the current prune target.
         tr("(sufficient to restore backups %n day(s) old)", "", expected_backup_days));
     ui->sizeWarningLabel->setText(
-        tr("%1 will download and store a copy of the Bitcoin block chain.").arg(PACKAGE_NAME) + " " +
+        // !SCASH
+        tr("%1 will download and store a copy of the Scash block chain.").arg(PACKAGE_NAME) + " " +
+        // !SCASH END
         storageRequiresMsg.arg(m_required_space_gb) + " " +
         tr("The wallet will also be stored in this directory.")
     );
