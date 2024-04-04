@@ -128,6 +128,13 @@ On WSL for Windows, launching `scash-qt` may require installing the following de
 sudo apt install libxcb-* libxkbcommon-x11-0
 ```
 
+Also note that in WSL for Windows, by default only half of the memory is available to WSL. You can [configure the memory limit](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#main-wsl-settings) by creating `.wslconfig` file in your user folder.
+```
+[wsl2]
+memory=16GB
+```
+
+
 Testnet and other chains
 ---------------------
 When running executables with the name `bitcoin...` if no chain is configured, the default chain will be Bitcoin mainnet.
@@ -139,26 +146,25 @@ Option `-chain=` accepts the following values: `scash` `scashtestnet` `scashregt
 Mining Scash
 ---------------------
 
-Solo mining is possible with the RPC `generatetoaddress`, for example:
+There are two ways to solo mine Scash.
+
+The recommended way is to use [cpuminer-scash](https://github.com/scash-project/cpuminer-scash). This is multi-threaded cpu mining software which connects to the Scash node and retrieves jobs via RPC `getblocktemplate`. The mining occurs in the cpu mining software, and not the Scash node.
+
+Another way is to mine inside the Scash node itself, using the RPC `generatetoaddress` which is single-threaded. For example:
 ```bash
 scash-cli createwallet myfirstwallet
 scash-cli getnewaddress
 scash-cli generatetoaddress 1 newminingaddress 10000
 ```
 
-To speed up mining at the expense of using more memory (at least 2GB more), enable the option `randomxfastmode` by adding to the `scash.conf` configuration file:
+To speed up mining in the Scash node, at the expense of using more memory (at least 2GB more), enable the option `randomxfastmode` by adding to the `scash.conf` configuration file:
 
 ```
 randomxfastmode=1
 ```
 
-Note that on WSL for Windows, by default only half of the memory is available to WSL. You can [configure the memory limit](https://learn.microsoft.com/en-us/windows/wsl/wsl-config#main-wsl-settings) by creating `.wslconfig` file in your user folder.
-```
-[wsl2]
-memory=16GB
-```
+This configuration option is not required when using `cpuminer-scash` which always mines in fast mode, using 2GB+ per mining thread.
 
-Solo mining with RPC `getblocktemplate` is possible with [cpuminer-scash](https://github.com/scash-project/cpuminer-scash).
 
 
 Getting Help
