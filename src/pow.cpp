@@ -19,16 +19,6 @@
 
 static Mutex rx_caches_mutex;
 
-typedef struct RandomXVMWrapper
-{
-    randomx_vm *vm = nullptr;
-    mutable Mutex m_hashing_mutex;
-    RandomXVMWrapper(randomx_vm *inVm) : vm(inVm) {}
-    ~RandomXVMWrapper() {
-        if (vm) randomx_destroy_vm(vm);
-    }
-} RandomXVMWrapper;
-
 typedef struct RandomXCacheWrapper {
     randomx_cache *cache = nullptr;
     RandomXCacheWrapper(randomx_cache *inCache) : cache(inCache) {}
@@ -47,6 +37,23 @@ typedef struct RandomXDatasetWrapper {
 
 using RandomXDatasetRef = std::shared_ptr<RandomXDatasetWrapper>;
 using RandomXCacheRef = std::shared_ptr<RandomXCacheWrapper>;
+
+typedef struct RandomXVMWrapper
+{
+    randomx_vm *vm = nullptr;
+    RandomXCacheRef cache = nullptr;
+    RandomXDatasetRef dataset = nullptr;
+    mutable Mutex m_hashing_mutex;
+    RandomXVMWrapper(randomx_vm *inVm, RandomXCacheRef inCacheRef, RandomXDatasetRef inDatasetRef) : vm(inVm), cache(inCacheRef), dataset(inDatasetRef) {}
+    ~RandomXVMWrapper() {
+        if (vm) {
+            randomx_destroy_vm(vm);
+            cache = nullptr;
+            dataset = nullptr;
+        }
+    }
+} RandomXVMWrapper;
+
 using RandomXVMRef = std::shared_ptr<RandomXVMWrapper>;
 
 using LRURandomXCacheRef = std::shared_ptr< boost::compute::detail::lru_cache<int32_t, RandomXCacheRef>>;
@@ -271,7 +278,7 @@ static void CreateFastVM(uint32_t nEpoch, RandomXCacheRef myCache)
     }
 
     LOCK(rx_caches_mutex);
-    cache_rx_vm_fast->insert(nEpoch, std::make_shared<RandomXVMWrapper>(myVM));
+    cache_rx_vm_fast->insert(nEpoch, std::make_shared<RandomXVMWrapper>(myVM, nullptr, myDataset));
 }
 
 // Get VM for a given epoch, creating and caching if necessary.
@@ -325,7 +332,7 @@ static boost::optional<RandomXVMRef> GetVM(int32_t nEpoch)
         return boost::none;
     }
 
-    RandomXVMRef vmRef = std::make_shared<RandomXVMWrapper>(myVM);
+    RandomXVMRef vmRef = std::make_shared<RandomXVMWrapper>(myVM, myCache, nullptr);
     cache_rx_vm_light->insert(nEpoch, vmRef);
 
     // Launch background thread to create fast mode VM (can be disabled to reduce memory usage)
