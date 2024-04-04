@@ -10,6 +10,7 @@
 
 // !SCASH
 bool g_isRandomX = false;   // global
+bool g_isIBDFinished = false;    // global
 // !SCASH END
 
 uint256 CBlockHeader::GetHash() const

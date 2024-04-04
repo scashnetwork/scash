@@ -1743,6 +1743,10 @@ bool ChainstateManager::IsInitialBlockDownload() const
     }
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     m_cached_finished_ibd.store(true, std::memory_order_relaxed);
+
+    // !SCASH
+    g_isIBDFinished = true;
+    // !SCASH END
     return false;
 }
 

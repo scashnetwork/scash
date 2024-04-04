@@ -297,6 +297,19 @@ static boost::optional<RandomXVMRef> GetVM(int32_t nEpoch)
 
     uint256 seedHash = GetSeedHash(nEpoch);
 
+    // When IBD has finished, if fastmode is enabled, clear the light mode caches to trigger building fast mode vms.
+    if (g_isIBDFinished) {
+        static std::once_flag allowFlag;
+        std::call_once(allowFlag, []() {
+            if (gArgs.GetBoolArg("-randomxfastmode", DEFAULT_RANDOMX_FAST_MODE)) {
+                LOCK(rx_caches_mutex);
+                cache_rx_vm_light->clear();
+                LogPrintf("RandomX fast mode enabled\n");
+            }
+        });
+    }
+
+
     // If VM in fast mode is cached, return it first, due to faster performance than light mode
     if (cache_rx_vm_fast->contains(nEpoch)) {
         return cache_rx_vm_fast->get(nEpoch);
@@ -335,8 +348,8 @@ static boost::optional<RandomXVMRef> GetVM(int32_t nEpoch)
     RandomXVMRef vmRef = std::make_shared<RandomXVMWrapper>(myVM, myCache, nullptr);
     cache_rx_vm_light->insert(nEpoch, vmRef);
 
-    // Launch background thread to create fast mode VM (can be disabled to reduce memory usage)
-    if (gArgs.GetBoolArg("-randomxfastmode", DEFAULT_RANDOMX_FAST_MODE)) {
+    // When IBD has finished, allow background thread to create fast mode VM (can be disabled to reduce memory usage)
+    if (g_isIBDFinished && gArgs.GetBoolArg("-randomxfastmode", DEFAULT_RANDOMX_FAST_MODE)) {
         std::thread t(CreateFastVM, nEpoch, myCache);
         t.detach();
     }

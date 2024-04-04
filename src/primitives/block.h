@@ -13,6 +13,7 @@
 
 // !SCASH
 extern bool g_isRandomX;
+extern bool g_isIBDFinished;
 // !SCASH END
 
 /** Nodes collect new transactions into a block, hash them into a hash tree,
