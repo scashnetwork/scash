@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1743,6 +1744,10 @@ bool ChainstateManager::IsInitialBlockDownload() const
     }
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     m_cached_finished_ibd.store(true, std::memory_order_relaxed);
+
+    // !SCASH
+    g_isIBDFinished = true;
+    // !SCASH END
     return false;
 }
 

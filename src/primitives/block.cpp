@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2019 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +11,7 @@
 
 // !SCASH
 bool g_isRandomX = false;   // global
+bool g_isIBDFinished = false;    // global
 // !SCASH END
 
 uint256 CBlockHeader::GetHash() const
