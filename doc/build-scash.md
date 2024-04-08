@@ -53,6 +53,8 @@ Scash requires building with the depends system.
 
 When calling `make` use `-j N` for N parallel jobs.
 
+### Node software without the GUI
+
 To build just the node software `scashd` and not the QT GUI app:
 
 ```bash
@@ -62,6 +64,8 @@ make -C depends NO_QT=1
 make
 make install
 ```
+
+### Node software with the GUI
 
 To build both the node software `scashd` and the QT GUI app `scashd-qt`
 
@@ -73,8 +77,33 @@ make
 make install
 ```
 
+### Executables
 The compiled executables will be found in `depends/x86_64-pc-linux-gnu/bin/` and can be copied to a folder on your path, typically `/usr/local/bin/` or `$HOME/.local/bin/`.
 
+
+## Building for Windows (by cross-compiling on Linux)
+
+Build on Linux and generate executables which run on Windows.
+
+```
+sudo apt install g++-mingw-w64-x86-64-posix 
+cd depends/
+make HOST=x86_64-w64-mingw32
+cd ..
+./autogen.sh
+./configure --prefix=$PWD/depends/x86_64-w64-mingw32 --program-transform-name='s/bitcoin/scash/g'
+make
+make install
+```
+
+The windows executables will be found in `depends/x86_64-w64-mingw32/bin/`.
+
+To generate a Windows installer:
+
+```
+sudo apt install nsis
+make deploy
+```
 
 ## Config file
 
