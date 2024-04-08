@@ -1,5 +1,4 @@
-SCASH BUILD NOTES
-====================
+# SCASH BUILD NOTES
 
 Scash (s/atoshi/cash) is a fork of Bitcoin Core which adds a new chain option to restore home computer mining.
 
@@ -13,8 +12,8 @@ For more specific instructions on building, see [`build-unix.md`](build-unix.md)
 
 Also see the latest [Scash release notes](release-notes/scash/).
 
-Getting started 
----------------------
+## Getting started 
+
 Update your system and install the following tools required to build software.
 
 ```bash
@@ -23,8 +22,8 @@ sudo apt upgrade
 sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git cmake bison
 ```
 
-WSL for Windows
----------------------
+## WSL for Windows
+
 Ignore this step if building on native Linux. The following only applies when building in WSL for Windows.
 
 Open the WSL configuration file:
@@ -38,8 +37,8 @@ appendWindowsPath=false
 ```
 Exit WSL and then restart WSL.
 
-Downloading the code
----------------------
+## Downloading the code
+
 Download the latest version of Scash and checkout the version you intend to build. If you want to build a specific version, you can replace `scash_master` with the version tag.
 
 ```bash
@@ -48,8 +47,7 @@ cd scash
 git checkout scash_master
 ```
 
-Building for Linux
----------------------
+## Building for Linux
 
 Scash requires building with the depends system.
 
@@ -78,8 +76,8 @@ make install
 The compiled executables will be found in `depends/x86_64-pc-linux-gnu/bin/` and can be copied to a folder on your path, typically `/usr/local/bin/` or `$HOME/.local/bin/`.
 
 
-Config file
----------------------
+## Config file
+
 The Scash configuration file is the same as bitcoin.conf.
 
 By default, Scash looks for a configuration file here:
@@ -106,8 +104,8 @@ If you intend to use the same configuration file with multiple networks, the con
 [scashtestnet]
 ```
 
-Running a node
----------------------
+## Running a node
+
 To run the Scash node:
 ```bash
 scashd
@@ -134,23 +132,21 @@ Also note that in WSL for Windows, by default only half of the memory is availab
 memory=16GB
 ```
 
+## Connecting to different chains
 
-Testnet and other chains
----------------------
 When running executables with the name `bitcoin...` if no chain is configured, the default chain will be Bitcoin mainnet.
 
 When running executables with the name `scash...` if no chain is configured, the default chain will be Scash mainnet.
 
 Option `-chain=` accepts the following values: `scash` `scashtestnet` `scashregtest` and for Bitcoin networks: `main` `test` `signet` `regtest`
 
-Mining Scash
----------------------
+## Mining Scash
 
-There are two ways to solo mine Scash.
+There are a few ways to mine Scash.
 
-The recommended way is to use [cpuminer-scash](https://github.com/scash-project/cpuminer-scash). This is multi-threaded cpu mining software which connects to the Scash node and retrieves jobs via RPC `getblocktemplate`. The mining occurs in the cpu mining software, and not the Scash node.
+### Testnet and Regtest chain
 
-Another way is to mine inside the Scash node itself, using the RPC `generatetoaddress` which is single-threaded. For example:
+Mining takes place inside the Scash node, using the RPC `generatetoaddress` which is single-threaded. For example:
 ```bash
 scash-cli createwallet myfirstwallet
 scash-cli getnewaddress
@@ -163,8 +159,13 @@ To speed up mining in the Scash node, at the expense of using more memory (at le
 randomxfastmode=1
 ```
 
-This configuration option is not required when using `cpuminer-scash` which always mines in fast mode, using 2GB+ per mining thread.
+### Main network and Testnet chain
 
+Mining takes place inside [cpuminer-scash](https://github.com/scash-project/cpuminer-scash) which is dedicated mining software that connects to the Scash node and retrieves mining jobs via RPC `getblocktemplate`. The 'randomxfastmode' configuration option is not required for the Scash node, since mining occurs inside `cpuminer-scash` which always runs in fast mode.
+
+### Mining Pools
+
+Third-party software exists for mining at pools.
 
 
 Getting Help
