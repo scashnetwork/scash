@@ -158,7 +158,9 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 /**
  * The PID file facilities.
  */
+// !SCASH
 static const char* BITCOIN_PID_FILENAME = "scashd.pid";
+// !SCASH END
 /**
  * True if this process has created a PID file.
  * Used to determine whether we should remove the PID file on shutdown.
