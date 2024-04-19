@@ -165,9 +165,9 @@ UniValue blockheaderToJSON(const CBlockIndex& tip, const CBlockIndex& blockindex
 
     // !SCASH
     if (g_isRandomX) {
-        result.pushKV("rx_epoch", GetEpoch(blockindex->nTime, Params().GetConsensus().nRandomXEpochDuration));
-        result.pushKV("rx_hash", blockindex->hashRandomX.GetHex());
-        result.pushKV("rx_cm", GetRandomXCommitment(blockindex->GetBlockHeader()).GetHex());
+        result.pushKV("rx_epoch", GetEpoch(blockindex.nTime, Params().GetConsensus().nRandomXEpochDuration));
+        result.pushKV("rx_hash", blockindex.hashRandomX.GetHex());
+        result.pushKV("rx_cm", GetRandomXCommitment(blockindex.GetBlockHeader()).GetHex());
     }
     // !SCASH END
 
