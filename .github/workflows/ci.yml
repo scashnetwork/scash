@@ -27,7 +27,7 @@ jobs:
   test-each-commit:
     name: 'test each commit'
     runs-on: ubuntu-22.04
-    # if: github.event_name == 'pull_request' && github.event.pull_request.commits != 1
+    if: github.event_name == 'pull_request' && github.event.pull_request.commits != 1
     timeout-minutes: 360  # Use maximum time, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes. Assuming a worst case time of 1 hour per commit, this leads to a --max-count=6 below.
     env:
       MAX_COUNT: 6
@@ -68,6 +68,8 @@ jobs:
         run: |
           # Run tests on commits after the last merge commit and before the PR head commit
           # Use clang++, because it is a bit faster and uses less memory than g++
+          git branch
+          git log -1
           git rebase --exec "echo Running test-one-commit on \$( git log -1 ) && ./autogen.sh && make -C depends -j $(nproc) && CC=clang CXX=clang++ ./configure --prefix=$PWD/depends/x86_64-pc-linux-gnu && make clean && make -j $(nproc) check && ./test/functional/test_runner.py -j $(( $(nproc) * 2 ))" ${{ env.TEST_BASE }}
 
   # macos-native-x86_64:
