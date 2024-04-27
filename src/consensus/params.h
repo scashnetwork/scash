@@ -14,6 +14,10 @@
 #include <map>
 #include <vector>
 
+// !SCASH
+#include <optional>
+// !SCASH END
+
 namespace Consensus {
 
 /**
@@ -149,6 +153,17 @@ struct Params {
     // !SCASH
     bool fPowRandomX{false};
     uint32_t nRandomXEpochDuration;
+
+    /** Used by the ASERT DAA */
+    int nASERTActivationHeight; // Block height at which ASERT DAA becomes active, if asertAnchorParams is set.
+    int64_t nASERTHalfLife;
+    struct ASERTAnchor {
+        int nHeight;
+        uint32_t nBits;
+        int64_t nPrevBlockTime;
+    };
+    std::optional<ASERTAnchor> asertAnchorParams;
+
     // !SCASH END
 };
 
