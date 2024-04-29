@@ -64,6 +64,22 @@ bool CheckProofOfWorkRandomX(const CBlockHeader& block, const Consensus::Params&
 /** Calculate RandomX commitment of block */
 uint256 GetRandomXCommitment(const CBlockHeader& block, uint256 *inHash = nullptr);
 
+/**
+ * Bitcoin cash's difficulty adjustment mechanism.
+ */
+class arith_uint256;
+arith_uint256 CalculateASERT(const arith_uint256 &refTarget,
+                             const int64_t nPowTargetSpacing,
+                             const int64_t nTimeDiff,
+                             const int64_t nHeightDiff,
+                             const arith_uint256 &powLimit,
+                             const int64_t nHalfLife) noexcept;
+
+uint32_t GetNextASERTWorkRequired(const CBlockIndex *pindexPrev,
+                                  const CBlockHeader *pblock,
+                                  const Consensus::Params &params,
+                                  const CBlockIndex *pindexAnchorBlock) noexcept;
+
 // !SCASH END
 
 #endif // BITCOIN_POW_H

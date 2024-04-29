@@ -599,6 +599,17 @@ public:
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
 
+        // The half life for the ASERT DAA. For every (nASERTHalfLife) seconds behind schedule the blockchain gets,
+        // difficulty is cut in half. Doubled if blocks are ahead of schedule.
+        // Two days
+        consensus.nASERTHalfLife = 2 * 24 * 60 * 60;
+        consensus.nASERTActivationHeight = 21000;
+        consensus.asertAnchorParams = Consensus::Params::ASERTAnchor{
+            18144,        // anchor block height
+            0x1c7b9d90,   // anchor block nBits
+            1712987784,   // anchor block previous block timestamp
+        };
+
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -693,6 +704,17 @@ public:
 
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
+
+        // The half life for the ASERT DAA. For every (nASERTHalfLife) seconds behind schedule the blockchain gets,
+        // difficulty is cut in half. Doubled if blocks are ahead of schedule.
+        // Two days
+        consensus.nASERTHalfLife = 2 * 24 * 60 * 60;
+        consensus.nASERTActivationHeight = 301;
+        consensus.asertAnchorParams = Consensus::Params::ASERTAnchor{
+            280,          // anchor block height
+            0x1e7fffff,   // anchor block nBits
+            1714191827,   // anchor block previous block timestamp
+        };
 
         pchMessageStart[0] = 0x0c;
         pchMessageStart[1] = 0x12;
