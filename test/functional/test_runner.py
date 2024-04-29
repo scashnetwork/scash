@@ -268,6 +268,7 @@ BASE_SCRIPTS = [
     'p2p_v2_earlykeyresponse.py',
     # !SCASH
     'p2p_invalid_block_pow.py',
+    'feature_suspicious_reorg.py',
     # !SCASH END
     'example_test.py',
     'mempool_accept_v3.py',
