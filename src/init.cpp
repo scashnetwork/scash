@@ -530,6 +530,7 @@ void SetupServerArgs(ArgsManager& argsman)
     argsman.AddArg("-randomxfastmode", strprintf("Enable fast mode for RandomX VM, but with greatly increased memory usage. Use 1 to enable. (default: %u)", DEFAULT_RANDOMX_FAST_MODE), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-randomxvmcachesize=<n>", strprintf("Cache RandomX VMs used for each epoch, but this greatly increases memory usage. (minimum: 1, default: %d).", DEFAULT_RANDOMX_VM_CACHE_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
     argsman.AddArg("-suspiciousreorgdepth=<n>", strprintf("Reorg depth considered suspicious by node. Upon detection, node shuts down. Use 0 to disable. (minimum: 2, default: %d blocks)", DEFAULT_SUSPICIOUS_REORG_DEPTH), ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
+    argsman.AddArg("-adddnsseed=<ip>", "Add address of DNS seed to query for addresses of nodes via DNS lookup. This option can be specified multiple times to connect to multiple DNS seeds.", ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::CONNECTION);
 // !SCASH END
 
     argsman.AddArg("-addnode=<ip>", strprintf("Add a node to connect to and attempt to keep the connection open (see the addnode RPC help for more info). This option can be specified multiple times to add multiple nodes; connections are limited to %u at a time and are counted separately from the -maxconnections limit.", MAX_ADDNODE_CONNECTIONS), ArgsManager::ALLOW_ANY | ArgsManager::NETWORK_ONLY, OptionsCategory::CONNECTION);
