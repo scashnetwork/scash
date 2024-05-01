@@ -120,7 +120,17 @@ chain=scash
 daemon=1
 debug=1
 txindex=1
+
+[scash]
+adddnsseed=seed.scash.one
+
+[scashtestnet]
+adddnsseed=testnet.seed.scash.one
 ```
+
+### Connecting to the network
+
+To help find other nodes on the network, a [DNS seed](https://bitcoin.stackexchange.com/questions/14371/what-is-a-dns-seed-node-vs-a-seed-node) has been specified. The DNS seed shown above is for testing purposes and may not always be online. Users are advised to ask the community for a list of [reliable DNS seeds](https://github.com/bitcoin/bitcoin/blob/master/doc/dnsseed-policy.md) to use, as well as the IP addresses of stable nodes on the network which can be used with the `-addnode` and `-seednode` RPC calls.
 
 If you intend to use the same configuration file with multiple networks, the config sections are named as follows:
 ```
