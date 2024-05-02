@@ -195,6 +195,10 @@ FUZZ_SUITE_LD_COMMON +=\
  $(SQLITE_LIBS) \
  $(BDB_LIBS)
 
+# !SCASH
+FUZZ_SUITE_LD_COMMON += $(RANDOMX_LIBS)
+# !SCASH END
+
 if USE_BDB
 BITCOIN_TESTS += wallet/test/db_tests.cpp
 endif
