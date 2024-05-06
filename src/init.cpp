@@ -1152,6 +1152,29 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (chainparams.GetConsensus().fPowRandomX) {
         g_isRandomX = true;
         LogPrintf("%s: Scash RandomX proof-of-work active\n", __func__);
+        randomx_flags flags = randomx_get_flags();
+        if (flags & RANDOMX_FLAG_ARGON2_AVX2) {
+            LogPrintf("- Argon2 implementation: AVX2\n");
+        } else if (flags & RANDOMX_FLAG_ARGON2_SSSE3) {
+            LogPrintf("- Argon2 implementation: SSSE3\n");
+        } else {
+            LogPrintf("- Argon2 implementation: reference\n");
+        }
+        if (flags & RANDOMX_FLAG_JIT) {
+            LogPrintf("- JIT compiled mode %s\n", (flags & RANDOMX_FLAG_SECURE) ? "(secure)" : "");
+        } else {
+            LogPrintf("- interpreted mode\n");
+        }
+        if (flags & RANDOMX_FLAG_HARD_AES) {
+            LogPrintf("- hardware AES mode\n");
+        } else {
+            LogPrintf("- software AES mode\n");
+        }
+        if (gArgs.GetBoolArg("-randomxfastmode", DEFAULT_RANDOMX_FAST_MODE)) {
+            LogPrintf("- full memory mode (2080 MiB)\n");
+        } else {
+            LogPrintf("- light memory mode (256 MiB)\n");
+        }
     }
     // !SCASH END
 
