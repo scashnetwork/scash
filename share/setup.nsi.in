@@ -15,18 +15,22 @@ Unicode true
 !define URL @PACKAGE_URL@
 
 # MUI Symbol Definitions
-!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/bitcoin.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
+# !SCASH
+!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/scash.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard-scash.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-header-scash.bmp"
+#! SCASH END
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "@PACKAGE_NAME@"
 !define MUI_FINISHPAGE_RUN "$WINDIR\explorer.exe"
-!define MUI_FINISHPAGE_RUN_PARAMETERS $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
+# !SCASH
+!define MUI_FINISHPAGE_RUN_PARAMETERS $INSTDIR\@SCASH_GUI_NAME@@EXEEXT@
+# !SCASH END
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -52,7 +56,9 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir $PROGRAMFILES64\Bitcoin
+# !SCASH
+InstallDir $PROGRAMFILES64\Scash
+# !SCASH END
 CRCCheck force
 XPStyle on
 BrandingText " "
@@ -64,7 +70,9 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "@PACKAGE_VERSION@"
 VIAddVersionKey FileDescription "Installer for @PACKAGE_NAME@"
-VIAddVersionKey LegalCopyright "Copyright (C) 2009-@COPYRIGHT_YEAR@ @COPYRIGHT_HOLDERS_FINAL@"
+# !SCASH
+VIAddVersionKey LegalCopyright "Copyright (C) 2009-@COPYRIGHT_YEAR@ @COPYRIGHT_HOLDERS_FINAL@ and the Scash Developers"
+# !SCASH END
 InstallDirRegKey HKCU "${REGKEY}" Path
 ShowUninstDetails show
 
@@ -72,18 +80,22 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File @abs_top_builddir@/release/@BITCOIN_GUI_NAME@@EXEEXT@
+# !SCASH
+    File @abs_top_builddir@/release/@SCASH_GUI_NAME@@EXEEXT@
     File /oname=COPYING.txt @abs_top_srcdir@/COPYING
-    File /oname=readme.txt @abs_top_srcdir@/doc/README_windows.txt
-    File @abs_top_srcdir@/share/examples/bitcoin.conf
+    File /oname=readme.txt @abs_top_srcdir@/doc/README_windows_scash.txt
+    File @abs_top_srcdir@/share/examples/scash.conf
+# !SCASH END
     SetOutPath $INSTDIR\share\rpcauth
     File @abs_top_srcdir@/share/rpcauth/*.*
     SetOutPath $INSTDIR\daemon
-    File @abs_top_builddir@/release/@BITCOIN_DAEMON_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_CLI_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_TX_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_WALLET_TOOL_NAME@@EXEEXT@
-    File @abs_top_builddir@/release/@BITCOIN_TEST_NAME@@EXEEXT@
+# !SCASH
+    File @abs_top_builddir@/release/@SCASH_DAEMON_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@SCASH_CLI_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@SCASH_TX_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@SCASH_WALLET_TOOL_NAME@@EXEEXT@
+    File @abs_top_builddir@/release/@SCASH_TEST_NAME@@EXEEXT@
+# !SCASH END
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
@@ -94,22 +106,28 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@PACKAGE_NAME@ (testnet, 64-bit).lnk" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "-testnet" "$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" 1
+# !SCASH
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\@SCASH_GUI_NAME@@EXEEXT@
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\@PACKAGE_NAME@ (testnet, 64-bit).lnk" "$INSTDIR\@SCASH_GUI_NAME@@EXEEXT@" "-chain=scashtestnet" "$INSTDIR\@SCASH_GUI_NAME@@EXEEXT@" 1
+# !SCASH END
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "@PACKAGE_VERSION@"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
-    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\bitcoin-qt.exe
+# !SCASH
+    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\scash-qt.exe
+# !SCASH END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     WriteRegStr HKCR "@PACKAGE_TARNAME@" "URL Protocol" ""
-    WriteRegStr HKCR "@PACKAGE_TARNAME@" "" "URL:Bitcoin"
-    WriteRegStr HKCR "@PACKAGE_TARNAME@\DefaultIcon" "" $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
-    WriteRegStr HKCR "@PACKAGE_TARNAME@\shell\open\command" "" '"$INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@" "%1"'
+# !SCASH
+    WriteRegStr HKCR "@PACKAGE_TARNAME@" "" "URL:Scash"
+    WriteRegStr HKCR "@PACKAGE_TARNAME@\DefaultIcon" "" $INSTDIR\@SCASH_GUI_NAME@@EXEEXT@
+    WriteRegStr HKCR "@PACKAGE_TARNAME@\shell\open\command" "" '"$INSTDIR\@SCASH_GUI_NAME@@EXEEXT@" "%1"'
+# !SCASH END
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -127,10 +145,14 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
+# !SCASH
+    Delete /REBOOTOK $INSTDIR\@SCASH_GUI_NAME@@EXEEXT@
+# !SCASH END
     Delete /REBOOTOK $INSTDIR\COPYING.txt
     Delete /REBOOTOK $INSTDIR\readme.txt
-    Delete /REBOOTOK $INSTDIR\bitcoin.conf
+# !SCASH
+    Delete /REBOOTOK $INSTDIR\scash.conf
+# !SCASH END
     RMDir /r /REBOOTOK $INSTDIR\share
     RMDir /r /REBOOTOK $INSTDIR\daemon
     DeleteRegValue HKCU "${REGKEY}\Components" Main
@@ -141,7 +163,9 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\@PACKAGE_NAME@ (testnet, 64-bit).lnk"
-    Delete /REBOOTOK "$SMSTARTUP\Bitcoin.lnk"
+# !SCASH
+    Delete /REBOOTOK "$SMSTARTUP\Scash.lnk"
+# !SCASH END
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\debug.log
     Delete /REBOOTOK $INSTDIR\db.log

@@ -15,6 +15,20 @@ src/test/fuzz/fuzz
 src/test/test_bitcoin
 src/qt/test/test_bitcoin-qt
 
+# !SCASH
+src/scash
+src/scashd
+src/scash-cli
+src/scash-gui
+src/scash-node
+src/scash-tx
+src/scash-util
+src/scash-chainstate
+src/scash-wallet
+src/test/test_scash
+src/qt/test/test_scash-qt
+# !SCASH END
+
 # autoreconf
 Makefile.in
 aclocal.m4
@@ -150,3 +164,5 @@ dist/
 /guix-build-*
 
 /ci/scratch/
+
+.vscode

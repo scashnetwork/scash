@@ -1,0 +1,22 @@
+Patch to update Argon salt for Scash
+
+---
+ src/configuration.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/configuration.h b/src/configuration.h
+index 84400dd..1fcdf19 100644
+--- a/src/configuration.h
++++ b/src/configuration.h
+@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #define RANDOMX_ARGON_LANES        1
+ 
+ //Argon2d salt
+-#define RANDOMX_ARGON_SALT         "RandomX\x03"
++#define RANDOMX_ARGON_SALT         "RandomX-Scash\x01"
+ 
+ //Number of random Cache accesses per Dataset item. Minimum is 2.
+ #define RANDOMX_CACHE_ACCESSES     8
+-- 
+2.17.1
+

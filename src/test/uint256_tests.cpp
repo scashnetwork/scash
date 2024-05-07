@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2021 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -259,8 +260,8 @@ BOOST_AUTO_TEST_CASE( conversion )
     BOOST_CHECK(UintToArith256(OneL) == 1);
     BOOST_CHECK(ArithToUint256(0) == ZeroL);
     BOOST_CHECK(ArithToUint256(1) == OneL);
-    BOOST_CHECK(arith_uint256(UintToArith256(uint256S(R1L.GetHex()))) == UintToArith256(R1L));
-    BOOST_CHECK(arith_uint256(UintToArith256(uint256S(R2L.GetHex()))) == UintToArith256(R2L));
+    BOOST_CHECK(arith_uint256(R1L.GetHex()) == UintToArith256(R1L));
+    BOOST_CHECK(arith_uint256(R2L.GetHex()) == UintToArith256(R2L));
     BOOST_CHECK(R1L.GetHex() == UintToArith256(R1L).GetHex());
     BOOST_CHECK(R2L.GetHex() == UintToArith256(R2L).GetHex());
 }
@@ -311,5 +312,64 @@ BOOST_AUTO_TEST_CASE( check_ONE )
     uint256 one = uint256S("0000000000000000000000000000000000000000000000000000000000000001");
     BOOST_CHECK_EQUAL(one, uint256::ONE);
 }
+
+// !SCASH
+BOOST_AUTO_TEST_CASE( check_512 )
+{
+    std::string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    std::string one  = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+    std::string two  = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002";
+    std::string four = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004";
+    std::string max  = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+
+    BOOST_CHECK(arith_uint512().GetHex() == zero);
+    BOOST_CHECK(arith_uint512().GetHex() != one);
+
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ZERO)).GetHex() == zero);
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ZERO)) == arith_uint512());
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ZERO)) == arith_uint512(zero));
+
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ONE)) != arith_uint512());
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ONE)) == arith_uint512(one));
+    BOOST_CHECK(arith_uint512::from(UintToArith256(uint256::ONE)) != arith_uint512(two));
+
+    arith_uint512 v;
+    v++;
+    BOOST_CHECK(v == arith_uint512(one));
+    v *= 2;
+    BOOST_CHECK(v == arith_uint512(two));
+    v -= 1;
+    BOOST_CHECK(v == arith_uint512(one));
+    v *= 4;
+    BOOST_CHECK(v == arith_uint512(four));
+    v /= 4;
+    BOOST_CHECK(v == arith_uint512(one));
+    v *= arith_uint512(max);
+    BOOST_CHECK(v == arith_uint512(max));
+    v += 1;
+    BOOST_CHECK(v == arith_uint512(zero));
+    BOOST_CHECK(v < arith_uint512(one));
+    BOOST_CHECK(arith_uint512(one) > 0);
+    
+    BOOST_CHECK(arith_uint256::from(arith_uint512(zero)) == UintToArith256(ZeroL));
+    BOOST_CHECK(arith_uint256::from(arith_uint512(one)) == UintToArith256(OneL));
+    BOOST_CHECK(arith_uint256::from(arith_uint512(max)) == UintToArith256(MaxL));
+    arith_uint512 tmp("d9ebbc99a778556334111eefccdaab889667445223000ddebbc99a7785501020304FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    BOOST_CHECK(arith_uint256::from(tmp) == arith_uint256("01020304FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" ));
+
+    // pow computations can overflow with uint256 but are safe with uint512
+    int64_t timespan = (14 * 24 * 60 * 60) * 4;
+    arith_uint256 target("00007FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    v = arith_uint512::from(target);
+    v *= timespan;
+    v /= timespan;
+    BOOST_CHECK_EQUAL(v.GetHex(), "000000000000000000000000000000000000000000000000000000000000000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    BOOST_CHECK(arith_uint256::from(v) == target);
+    target *= timespan;
+    target /= timespan;
+    BOOST_CHECK(arith_uint256::from(v) != target);
+    BOOST_CHECK_EQUAL(target.GetHex(), "0000032b65e991cc4ff832b65e991cc4ff832b65e991cc4ff832b65e991cc4fe"); // overflow
+}
+// !SCASH END
 
 BOOST_AUTO_TEST_SUITE_END()

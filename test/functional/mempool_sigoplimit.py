@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2023 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test sigop limit mempool policy (`-bytespersigop` parameter)"""
@@ -46,6 +47,10 @@ class BytesPerSigOpTest(BitcoinTestFramework):
         self.num_nodes = 1
         # allow large datacarrier output to pad transactions
         self.extra_args = [['-datacarriersize=100000']]
+        # !SCASH
+        for args in self.extra_args:
+            args.append("-datacarrier=1")
+        # !SCASH END
 
     def create_p2wsh_spending_tx(self, witness_script, output_script):
         """Create a 1-input-1-output P2WSH spending transaction with only the

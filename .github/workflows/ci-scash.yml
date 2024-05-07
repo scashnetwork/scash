@@ -1,0 +1,80 @@
+# Copyright (c) 2023 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+name: CI-Scash
+on:
+  # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request.
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.event_name != 'pull_request' && github.run_id || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DANGER_RUN_CI_ON_HOST: 1
+  CI_FAILFAST_TEST_LEAVE_DANGLING: 1  # GHA does not care about dangling processes and setting this variable avoids killing the CI script itself on error
+  MAKEJOBS: '-j10'
+
+jobs:
+  test-pr-merge:
+    name: 'test pull request (merge commit)'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360  # Use maximum time, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes.
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install clang ccache build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git cmake bison libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools qtwayland5 -y
+      - name: Cache dependencies
+        id: cache-depends-packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            depends/built
+            depends/sources
+          key: ${{ runner.os }}-depends-packages
+      - name: Compile and run tests
+        run: |
+          git branch
+          git log -1
+          ./autogen.sh
+          make -C depends -j $(nproc)
+          CC=clang CXX=clang++
+          ./configure --prefix=$PWD/depends/x86_64-pc-linux-gnu
+          make clean
+          make -j $(nproc) check
+          ./test/functional/test_runner.py -j $(nproc) --extended
+  test-pr-head:
+    name: 'test pull request (head commit)'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360  # Use maximum time, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: ${{ env.FETCH_DEPTH }}
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install clang ccache build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git cmake bison libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools qtwayland5 -y
+      - name: Cache dependencies
+        id: cache-depends-packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            depends/built
+            depends/sources
+          key: ${{ runner.os }}-depends-packages
+      - name: Compile and run tests
+        run: |
+          git branch
+          git log -1
+          ./autogen.sh
+          make -C depends -j $(nproc)
+          CC=clang CXX=clang++
+          ./configure --prefix=$PWD/depends/x86_64-pc-linux-gnu
+          make clean
+          make -j $(nproc) check
+          ./test/functional/test_runner.py -j $(nproc) --extended
