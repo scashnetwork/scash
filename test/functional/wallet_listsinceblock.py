@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the listsinceblock RPC."""
@@ -27,6 +28,10 @@ class ListSinceBlockTest(BitcoinTestFramework):
         self.setup_clean_chain = True
         # whitelist peers to speed up tx relay / mempool sync
         self.extra_args = [["-whitelist=noban@127.0.0.1"]] * self.num_nodes
+        # !SCASH
+        for args in self.extra_args:
+            args.append("-datacarrier=1")
+        # !SCASH END
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()

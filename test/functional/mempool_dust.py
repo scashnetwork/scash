@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test dust limit mempool policy (`-dustrelayfee` parameter)"""
@@ -40,7 +41,9 @@ DUST_RELAY_TX_FEE = 3000  # default setting [sat/kvB]
 class DustRelayFeeTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
-        self.extra_args = [['-permitbaremultisig']]
+        # !SCASH
+        self.extra_args = [["-datacarrier=1", '-permitbaremultisig']]
+        # !SCASH END
 
     def test_dust_output(self, node: TestNode, dust_relay_fee: Decimal,
                          output_script: CScript, type_desc: str) -> None:
@@ -102,7 +105,9 @@ class DustRelayFeeTest(BitcoinTestFramework):
             else:
                 dust_parameter = f"-dustrelayfee={dustfee_btc_kvb:.8f}"
                 self.log.info(f"Test dust limit setting {dust_parameter} ({dustfee_sat_kvb} sat/kvB)...")
-                self.restart_node(0, extra_args=[dust_parameter, "-permitbaremultisig"])
+                # !SCASH
+                self.restart_node(0, extra_args=[dust_parameter, "-permitbaremultisig", "-datacarrier=1"])
+                # !SCASH END
 
             for output_script, description in output_scripts:
                 self.test_dust_output(self.nodes[0], dustfee_btc_kvb, output_script, description)

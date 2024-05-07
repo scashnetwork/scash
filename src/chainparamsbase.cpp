@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +14,12 @@
 
 void SetupChainParamsBaseOptions(ArgsManager& argsman)
 {
-    argsman.AddArg("-chain=<chain>", "Use the chain <chain> (default: main). Allowed values: main, test, signet, regtest", ArgsManager::ALLOW_ANY, OptionsCategory::CHAINPARAMS);
+// !SCASH
+    argsman.AddArg("-chain=<chain>", "Use the chain <chain> (default: main). Allowed values: scash, scashtestnet, scashregtest, main, test, signet, regtest", ArgsManager::ALLOW_ANY, OptionsCategory::CHAINPARAMS);
+    argsman.AddArg("-scashregtest", "Enter scash regression test mode. Equivalent to -chain=scashregtest.", ArgsManager::ALLOW_ANY, OptionsCategory::CHAINPARAMS);
+    argsman.AddArg("-scashtestnet", "Use the scash test chain. Equivalent to -chain=scashtestnet.", ArgsManager::ALLOW_ANY, OptionsCategory::CHAINPARAMS);
+    argsman.AddArg("-scash", "Use the scash chain. Equivalent to -chain=scash.", ArgsManager::ALLOW_ANY, OptionsCategory::CHAINPARAMS);
+// !SCASH END
     argsman.AddArg("-regtest", "Enter regression test mode, which uses a special chain in which blocks can be solved instantly. "
                  "This is intended for regression testing tools and app development. Equivalent to -chain=regtest.", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::CHAINPARAMS);
     argsman.AddArg("-testactivationheight=name@height.", "Set the activation height of 'name' (segwit, bip34, dersig, cltv, csv). (regtest-only)", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
@@ -39,14 +45,22 @@ const CBaseChainParams& BaseParams()
 std::unique_ptr<CBaseChainParams> CreateBaseChainParams(const ChainType chain)
 {
     switch (chain) {
+    // !SCASH
     case ChainType::MAIN:
-        return std::make_unique<CBaseChainParams>("", 8332, 8334);
+        return std::make_unique<CBaseChainParams>("btc", 8332, 8334);
     case ChainType::TESTNET:
-        return std::make_unique<CBaseChainParams>("testnet3", 18332, 18334);
+        return std::make_unique<CBaseChainParams>("btctestnet3", 18332, 18334);
     case ChainType::SIGNET:
-        return std::make_unique<CBaseChainParams>("signet", 38332, 38334);
+        return std::make_unique<CBaseChainParams>("btcsignet", 38332, 38334);
     case ChainType::REGTEST:
-        return std::make_unique<CBaseChainParams>("regtest", 18443, 18445);
+        return std::make_unique<CBaseChainParams>("btcregtest", 18443, 18445);
+    case ChainType::SCASHMAIN:
+        return std::make_unique<CBaseChainParams>("scash", 8342, 8344);
+    case ChainType::SCASHTESTNET:
+        return std::make_unique<CBaseChainParams>("scashtestnet", 18342, 18344);
+    case ChainType::SCASHREGTEST:
+        return std::make_unique<CBaseChainParams>("scashregtest", 18453, 18455);
+    // !SCASH END
     }
     assert(false);
 }

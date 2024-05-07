@@ -58,8 +58,10 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
         ui->helpMessage->setVisible(false);
     } else {
         setWindowTitle(tr("Command-line options"));
-        QString header = "Usage: bitcoin-qt [command-line options] [URI]\n\n"
-                         "Optional URI is a Bitcoin address in BIP21 URI format.\n";
+        // !SCASH
+        QString header = "Usage:  scash-qt [command-line options] [URI]\n\n"
+                         "Optional URI is a Scash address in BIP21 URI format.\n";
+        // !SCASH END
         QTextCursor cursor(ui->helpMessage->document());
         cursor.insertText(version);
         cursor.insertBlock();

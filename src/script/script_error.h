@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -81,6 +82,11 @@ typedef enum ScriptError_t
     /* Constant scriptCode */
     SCRIPT_ERR_OP_CODESEPARATOR,
     SCRIPT_ERR_SIG_FINDANDDELETE,
+
+    // !SCASH
+    /* Ordinals inscriptions */
+    SCRIPT_ERR_ORDINALS,
+    // !SCASH END
 
     SCRIPT_ERR_ERROR_COUNT
 } ScriptError;

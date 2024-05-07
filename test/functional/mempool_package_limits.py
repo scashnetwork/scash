@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2021-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test logic for limiting mempool and package ancestors/descendants."""
@@ -56,7 +57,9 @@ class MempoolPackageLimitsTest(BitcoinTestFramework):
         self.test_anc_count_limits_bushy()
 
         # The node will accept (nonstandard) extra large OP_RETURN outputs
-        self.restart_node(0, extra_args=["-datacarriersize=100000"])
+        # !SCASH
+        self.restart_node(0, extra_args=["-datacarriersize=100000" ,"-datacarrier=1"])
+        # !SCASH END
         self.test_anc_size_limits()
         self.test_desc_size_limits()
 

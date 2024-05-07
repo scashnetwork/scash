@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -77,6 +78,9 @@ static ScriptErrorDesc script_errors[]={
     {SCRIPT_ERR_UNBALANCED_CONDITIONAL, "UNBALANCED_CONDITIONAL"},
     {SCRIPT_ERR_NEGATIVE_LOCKTIME, "NEGATIVE_LOCKTIME"},
     {SCRIPT_ERR_UNSATISFIED_LOCKTIME, "UNSATISFIED_LOCKTIME"},
+    // !SCASH
+    {SCRIPT_ERR_ORDINALS, "ORDINALS"},
+    // !SCASH END
     {SCRIPT_ERR_SIG_HASHTYPE, "SIG_HASHTYPE"},
     {SCRIPT_ERR_SIG_DER, "SIG_DER"},
     {SCRIPT_ERR_MINIMALDATA, "MINIMALDATA"},
@@ -967,6 +971,50 @@ BOOST_AUTO_TEST_CASE(script_json_test)
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
     }
 }
+
+// !SCASH
+BOOST_AUTO_TEST_CASE(script_ordinals_inscriptions)
+{
+    // Detect dead code pattern used by ordinals inscriptions
+    ScriptError err;
+    const std::vector<unsigned char> inscription1{ OP_FALSE, OP_IF, OP_NOP, OP_ENDIF };
+    const std::vector<unsigned char> inscription2{ OP_TRUE, OP_NOTIF, OP_NOP, OP_ENDIF };
+
+    std::vector<std::vector<unsigned char>> stack;
+    BOOST_CHECK(!EvalScript(stack, CScript(inscription1.begin(), inscription1.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::TAPSCRIPT, &err));
+    BOOST_CHECK_EQUAL(err, SCRIPT_ERR_ORDINALS);
+
+    stack.clear();
+    BOOST_CHECK(!EvalScript(stack, CScript(inscription2.begin(), inscription2.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::TAPSCRIPT, &err));
+    BOOST_CHECK_EQUAL(err, SCRIPT_ERR_ORDINALS);
+
+    // Check no false positives when OP_IF and OP_NOTIF are used as intended
+    const std::vector<unsigned char> safe1{ OP_TRUE, OP_IF, OP_NOP, OP_ENDIF };
+    const std::vector<unsigned char> safe2{ OP_FALSE, OP_NOTIF, OP_NOP, OP_ENDIF };
+    const std::vector<unsigned char> safe3{ OP_0, OP_0, OP_ADD, OP_IF, OP_ENDIF };
+
+    stack.clear();
+    BOOST_CHECK(EvalScript(stack, CScript(safe1.begin(), safe1.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::TAPSCRIPT, &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+
+    stack.clear();
+    BOOST_CHECK(EvalScript(stack, CScript(safe2.begin(), safe2.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::TAPSCRIPT, &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+
+    stack.clear();
+    BOOST_CHECK(EvalScript(stack, CScript(safe3.begin(), safe3.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::TAPSCRIPT, &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+
+    // Check pattern detection is disabled outside of Tapscript
+    stack.clear();
+    BOOST_CHECK(EvalScript(stack, CScript(inscription1.begin(), inscription1.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::BASE, &err));
+    BOOST_CHECK_EQUAL(err, SCRIPT_ERR_OK);
+
+    stack.clear();
+    BOOST_CHECK(EvalScript(stack, CScript(inscription2.begin(), inscription2.end()), SCRIPT_VERIFY_DISCOURAGE_ORDINALS, BaseSignatureChecker(), SigVersion::BASE, &err));
+    BOOST_CHECK_EQUAL(err, SCRIPT_ERR_OK);
+}
+// !SCASH END
 
 BOOST_AUTO_TEST_CASE(script_PushData)
 {

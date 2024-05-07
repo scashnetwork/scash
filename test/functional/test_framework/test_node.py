@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Class for bitcoind node under test"""
@@ -78,7 +79,9 @@ class TestNode():
         self.index = i
         self.p2p_conn_index = 1
         self.datadir_path = datadir_path
-        self.bitcoinconf = self.datadir_path / "bitcoin.conf"
+        # !SCASH
+        self.bitcoinconf = self.datadir_path / 'scash.conf'
+        # !SCASH END
         self.stdout_dir = self.datadir_path / "stdout"
         self.stderr_dir = self.datadir_path / "stderr"
         self.chain = chain

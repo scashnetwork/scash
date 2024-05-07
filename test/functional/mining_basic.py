@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test mining RPCs
@@ -33,6 +34,9 @@ from test_framework.util import (
 )
 from test_framework.wallet import MiniWallet
 
+# !SCASH
+from test_framework.test_framework import CHAIN_TYPE_FROM_SUBDIR
+# !SCASH END
 
 VERSIONBITS_TOP_BITS = 0x20000000
 VERSIONBITS_DEPLOYMENT_TESTDUMMY_BIT = 28
@@ -129,7 +133,9 @@ class MiningTest(BitcoinTestFramework):
         self.log.info('getmininginfo')
         mining_info = node.getmininginfo()
         assert_equal(mining_info['blocks'], 200)
-        assert_equal(mining_info['chain'], self.chain)
+        # !SCASH
+        assert_equal(mining_info['chain'], CHAIN_TYPE_FROM_SUBDIR[self.chain] )
+        # !SCASH END
         assert 'currentblocktx' not in mining_info
         assert 'currentblockweight' not in mining_info
         assert_equal(mining_info['difficulty'], Decimal('4.656542373906925E-10'))

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2022 The Bitcoin Core developers
+# Copyright (c) 2024 The Scash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the listtransactions API."""
@@ -29,6 +30,10 @@ class ListTransactionsTest(BitcoinTestFramework):
         # This test isn't testing txn relay/timing, so set whitelist on the
         # peers for instant txn relay. This speeds up the test run time 2-3x.
         self.extra_args = [["-whitelist=noban@127.0.0.1", "-walletrbf=0"]] * self.num_nodes
+        # !SCASH
+        for args in self.extra_args:
+            args.append("-datacarrier=1")
+        # !SCASH END
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()

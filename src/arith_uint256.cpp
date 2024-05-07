@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2024 The Scash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +9,14 @@
 #include <uint256.h>
 #include <crypto/common.h>
 
-#include <cassert>
+
+template <unsigned int BITS>
+base_uint<BITS>::base_uint(const std::string& str)
+{
+    static_assert(BITS/32 > 0 && BITS%32 == 0, "Template parameter BITS must be a positive multiple of 32.");
+
+    SetHex(str);
+}
 
 template <unsigned int BITS>
 base_uint<BITS>& base_uint<BITS>::operator<<=(unsigned int shift)
@@ -147,6 +155,22 @@ std::string base_uint<BITS>::GetHex() const
 }
 
 template <unsigned int BITS>
+void base_uint<BITS>::SetHex(const char* psz)
+{
+    base_blob<BITS> b;
+    b.SetHex(psz);
+    for (int x = 0; x < this->WIDTH; ++x) {
+        this->pn[x] = ReadLE32(b.begin() + x*4);
+    }
+}
+
+template <unsigned int BITS>
+void base_uint<BITS>::SetHex(const std::string& str)
+{
+    SetHex(str.c_str());
+}
+
+template <unsigned int BITS>
 std::string base_uint<BITS>::ToString() const
 {
     return GetHex();
@@ -229,3 +253,8 @@ arith_uint256 UintToArith256(const uint256 &a)
         b.pn[x] = ReadLE32(a.begin() + x*4);
     return b;
 }
+
+// SCASH
+// Explicit instantiations for base_uint<512>
+template class base_uint<512>;
+// !SCASH END
