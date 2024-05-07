@@ -3,7 +3,7 @@
 
 Scash versioning is as follows:
 ```
-Scash version v2.x.x-andresen-core-27.0.0
+Scash version v2.x.x-narnia-core-27.0.0
               |        |            |
             SCASH   CODENAME    BITCOIN CORE
 ```
